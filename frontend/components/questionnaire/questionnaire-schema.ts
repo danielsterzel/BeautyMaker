@@ -84,8 +84,15 @@ export const questionnaireAnswersSchema = z
     }
   });
 
+export const questionnaireResponseSchema = z.object({
+  id: z.uuid(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date()
+})
+
 export type SkincareProductInput = z.input<typeof skincareProductSchema>;
 export type QuestionnaireAnswersInput = z.input<
   typeof questionnaireAnswersSchema
 >;
 export type QuestionnaireAnswers = z.output<typeof questionnaireAnswersSchema>;
+export type QuestionnaireResponse = z.infer<typeof questionnaireResponseSchema>;

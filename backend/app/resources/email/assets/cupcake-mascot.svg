@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 108" role="img" aria-label="BeautyMaker cupcake companion">
+  <path d="M31 79 24 99M65 79l8 20M25 99l-7 2M71 99l7 2" fill="none" stroke="#614e4f" stroke-linecap="round" stroke-width="3"/>
+  <path d="M24 61 8 72M72 61l16 11M8 72l-4-1M88 72l4-1" fill="none" stroke="#614e4f" stroke-linecap="round" stroke-width="3"/>
+  <path d="M18 48h60l-8 39a9 9 0 0 1-9 7H35a9 9 0 0 1-9-7Z" fill="#d9a89a" stroke="#614e4f" stroke-width="2.5"/>
+  <path d="m30 53 3 33M44 52l1 35M59 52l-2 35M70 52l-5 34" fill="none" opacity=".28" stroke="#70595b" stroke-width="2"/>
+  <path d="M17 49c-2-8 3-14 10-16-1-11 8-19 18-15 6-10 23-5 22 7 10-1 17 9 12 18-1 3-4 5-8 6Z" fill="#f7e8df" stroke="#614e4f" stroke-linejoin="round" stroke-width="2.5"/>
+  <circle cx="38" cy="63" r="2.7" fill="#493b3c"/>
+  <circle cx="59" cy="63" r="2.7" fill="#493b3c"/>
+  <path d="M43 72c3 3 8 3 11 0" fill="none" stroke="#493b3c" stroke-linecap="round" stroke-width="2.5"/>
+  <circle cx="31" cy="70" r="4" fill="#e99aab" opacity=".48"/>
+  <circle cx="66" cy="70" r="4" fill="#e99aab" opacity=".48"/>
+</svg>

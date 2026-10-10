@@ -86,18 +86,18 @@ export function MultiChoice({ options, values, onChange, columns = 3 }: MultiCho
 }
 
 type TextAnswerProps = {
-  value: string;
-  onChange?: (value: string) => void;
+  defaultValue?: string;
+  onBlur?: (value: string) => void;
   placeholder: string;
   multiline?: boolean;
 };
 
-export function TextAnswer({ value, onChange, placeholder, multiline = false }: TextAnswerProps) {
+export function TextAnswer({ defaultValue, onBlur, placeholder, multiline = false }: TextAnswerProps) {
   const sharedClassName = "w-full rounded-[1.15rem] border border-black/[0.07] bg-white/70 px-5 py-4 text-[13px] font-normal leading-6 text-[#51494a] shadow-sm outline-none transition placeholder:text-[#b8afb1] focus:border-[#c69aaa] focus:bg-white focus:ring-4 focus:ring-[#ead9e0]/45";
 
   return multiline ? (
-    <textarea value={value} onChange={(event) => onChange?.(event.target.value)} placeholder={placeholder} rows={4} className={`${sharedClassName} resize-none`} />
+    <textarea defaultValue={defaultValue} onBlur={(event) => onBlur?.(event.target.value)} placeholder={placeholder} rows={4} className={`${sharedClassName} resize-none`} />
   ) : (
-    <input value={value} onChange={(event) => onChange?.(event.target.value)} placeholder={placeholder} className={sharedClassName} />
+    <input defaultValue={defaultValue} onBlur={(event) => onBlur?.(event.target.value)} placeholder={placeholder} className={sharedClassName} />
   );
 }

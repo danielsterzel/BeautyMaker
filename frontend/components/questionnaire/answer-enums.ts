@@ -65,11 +65,6 @@ export enum DermatologistAdviceAnswer {
   NO = "no",
 }
 
-/**
- * Maps questionnaire IDs to the exact enum expected by the backend.
- * Q7 and the optional text follow-ups are intentionally absent because
- * their values are free text rather than constrained enum answers.
- */
 export const QUESTION_ANSWER_ENUMS = {
   q1: AfterCleansingAnswer,
   q2: MiddleOfTheDayAnswer,

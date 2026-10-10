@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import DateTime, ForeignKey
@@ -29,7 +29,7 @@ class Questionnaire(Base):
         nullable=False,
     )
 
-    question_answers: Mapped[dict[str, str]] = mapped_column(JSONB, nullable=False)
+    question_answers: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),

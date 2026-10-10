@@ -7,19 +7,8 @@ from pydantic import Field, StringConstraints, model_validator
 
 from app.schemas.configured_schema import ConfiguredSchema
 
-# class Questionnaire(ConfiguredSchema):
-questionaire = {
-    "q1": "How does your skin usually feel after cleansing?",
-    "q2": "How does your skin usually feel by the middle of the day?",
-    "q3": "What would you most like to improve right now",
-    "q4": "Does your skin tend to react easily to new products?",
-    "q5": "What does your current routine look like?",
-    "q6": "Are there products your skin already loves?",
-    "q7": "Anything your skin definitely doesn't like?",
-    "q8": "Are you currently following any skincare advice from a dermatologist?",
-    "q9": "How would you like BeautyMaker to approach your routine?",
-    "q10": "And finally — how should BeautyMaker talk to you?",
-}
+from uuid import UUID
+from datetime import datetime
 
 
 class AfterCleansingAnswer(StrEnum):
@@ -149,3 +138,9 @@ class QuestionnaireAnswers(ConfiguredSchema):
             )
 
         return self
+
+
+class QuestionnaireResponse(ConfiguredSchema):
+    id: UUID
+    created_at: datetime
+    updated_at: datetime

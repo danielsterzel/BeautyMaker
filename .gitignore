@@ -100,3 +100,6 @@ temp/
 
 # Local uploads / generated files
 uploads/
+
+*.pem
+keys/

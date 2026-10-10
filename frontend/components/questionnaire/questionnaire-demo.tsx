@@ -1,7 +1,8 @@
 "use client";
 
-import { Check, ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import { CupcakeMascot } from "@/components/beauty-maker/cupcake-mascot";
 import {
   AfterCleansingAnswer,
@@ -18,6 +19,7 @@ import { MultiChoice, SingleChoice, TextAnswer } from "./answer-controls";
 import { QuestionVisual } from "./question-visual";
 import { QuestionnaireShell } from "./questionnaire-shell";
 import type { ChoiceOption, QuestionDefinition } from "./types";
+import { useQuestionnaireStore } from "@/lib/storage";
 
 const questions: QuestionDefinition[] = [
   { id: "q1", question: "How does your skin usually feel after cleansing?", supportingText: "Think about the first 10–15 minutes, before applying anything else.", thinkingLabel: "understanding your post-cleanse feel", visual: "flower", tone: "cream" },
@@ -32,7 +34,7 @@ const questions: QuestionDefinition[] = [
   { id: "q10", question: "And finally — how should BeautyMaker talk to you?", supportingText: "The care stays thoughtful. You choose the personality.", thinkingLabel: "finding a voice that feels like you", visual: "conversation", tone: "blush" },
 ];
 
-const standardOptions: Record<string, ChoiceOption[]> = {
+const standardOptions = {
   q1: [
     { value: AfterCleansingAnswer.TIGHT_OR_UNCOMFORTABLE, label: "Tight or uncomfortable" },
     { value: AfterCleansingAnswer.BALANCED, label: "Comfortable and balanced" },
@@ -65,7 +67,13 @@ const standardOptions: Record<string, ChoiceOption[]> = {
     { value: ConversationModeAnswer.DIRECT, label: "Direct & pragmatic", description: "Honest, casual and straight to the point" },
     { value: ConversationModeAnswer.CLINICAL, label: "Clinical & concise", description: "Clear, structured and matter-of-fact" },
   ],
-};
+} satisfies Record<string, ChoiceOption[]>;
+
+type StandardQuestionId = keyof typeof standardOptions;
+
+function isStandardQuestionId(questionId: string): questionId is StandardQuestionId {
+  return questionId in standardOptions;
+}
 
 const concernOptions: ChoiceOption[] = [
   { value: SkinConcernAnswer.DRYNESS, label: "Dryness" },
@@ -87,37 +95,27 @@ const routineOptions: ChoiceOption[] = [
   { value: CurrentRoutineAnswer.ELSE, label: "Something else", description: "Mist, toner, oil or treatment" },
 ];
 
-type Answers = Record<string, string | string[]>;
-
 export function QuestionnaireDemo() {
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<Answers>({});
+
+  const answers = useQuestionnaireStore((store) => store.answers);
+
+  const saveAnswer = useQuestionnaireStore((store) => store.setAnswers);
+
   const isComplete = step === questions.length;
   const question = questions[Math.min(step, questions.length - 1)];
 
-  function setSingle(id: string, value: string) {
-    setAnswers((current) => ({ ...current, [id]: value }));
-  }
-
-  function setMultiple(id: string, values: string[]) {
-    setAnswers((current) => ({ ...current, [id]: values }));
-  }
-
-  function stringAnswer(id: string) {
-    return typeof answers[id] === "string" ? answers[id] as string : "";
-  }
-
-  function arrayAnswer(id: string) {
-    return Array.isArray(answers[id]) ? answers[id] as string[] : [];
-  }
+  useEffect(() => {
+    console.log("NEW ANSWER: ", answers);
+  }, [answers])
 
   function renderAnswer() {
     if (question.id === "q3") {
-      return <MultiChoice options={concernOptions} values={arrayAnswer("q3")} onChange={(values) => setMultiple("q3", values)} columns={4} />;
+      return <MultiChoice options={concernOptions} values={answers.concerns ?? []} onChange={(selectedValues) => saveAnswer("q3", selectedValues)} columns={4} />;
     }
 
     if (question.id === "q5") {
-      return <MultiChoice options={routineOptions} values={arrayAnswer("q5")} onChange={(values) => setMultiple("q5", values)} columns={4} />;
+      return <MultiChoice options={routineOptions} values={answers.currentRoutine ?? []} onChange={(selectedValues) => saveAnswer("q5", selectedValues)} columns={4} />;
     }
 
     if (question.id === "q6") {
@@ -125,11 +123,15 @@ export function QuestionnaireDemo() {
         <div className="mx-auto w-full max-w-3xl space-y-4">
           <SingleChoice
             options={[{ value: LovedProductsAnswer.YES, label: "Yes — I’ll add them" }, { value: LovedProductsAnswer.NOT_REALLY, label: "Not really yet" }]}
-            value={stringAnswer("q6")}
-            onChange={(value) => setSingle("q6", value)}
+            value={answers.lovedProductsAnswer}
+            onChange={(answer) => saveAnswer("q6", answer)}
           />
-          {stringAnswer("q6") === LovedProductsAnswer.YES ? (
-            <TextAnswer value={stringAnswer("q6-products")} onChange={(value) => setSingle("q6-products", value)} placeholder="Search for a product or type its name…" />
+          {answers.lovedProductsAnswer === LovedProductsAnswer.YES ? (
+            <TextAnswer
+              defaultValue={answers.lovedProducts?.map((product) => product.name).join(", ") ?? ""}
+              onBlur={(productNames) => saveAnswer("q6-products", productNames)}
+              placeholder="Search for a product or type its name…"
+            />
           ) : null}
         </div>
       );
@@ -138,7 +140,12 @@ export function QuestionnaireDemo() {
     if (question.id === "q7") {
       return (
         <div className="mx-auto w-full max-w-3xl">
-          <TextAnswer value={stringAnswer("q7")} onChange={(value) => setSingle("q7", value)} placeholder="For example: heavy creams, fragrance, a product that caused irritation…" multiline />
+          <TextAnswer
+            defaultValue={answers.unlikedProducts?.map((product) => product.name).join(", ") ?? ""}
+            onBlur={(unlikedProducts) => saveAnswer("q7", unlikedProducts)}
+            placeholder="For example: heavy creams, fragrance, a product that caused irritation…"
+            multiline
+          />
           <p className="mt-3 text-center text-[10px] font-normal text-[#aaa1a3]">It’s completely okay to leave this blank.</p>
         </div>
       );
@@ -147,15 +154,36 @@ export function QuestionnaireDemo() {
     if (question.id === "q8") {
       return (
         <div className="mx-auto w-full max-w-3xl space-y-4">
-          <SingleChoice options={[{ value: DermatologistAdviceAnswer.YES, label: "Yes" }, { value: DermatologistAdviceAnswer.NO, label: "No" }]} value={stringAnswer("q8")} onChange={(value) => setSingle("q8", value)} />
-          {stringAnswer("q8") === DermatologistAdviceAnswer.YES ? (
-            <TextAnswer value={stringAnswer("q8-advice")} onChange={(value) => setSingle("q8-advice", value)} placeholder="Optionally add the diagnosis, advice or products your dermatologist recommended…" multiline />
+          <SingleChoice
+            options={[{ value: DermatologistAdviceAnswer.YES, label: "Yes" }, { value: DermatologistAdviceAnswer.NO, label: "No" }]}
+            value={answers.dermatologistAdviceAnswer ?? ""}
+            onChange={(answer) => saveAnswer("q8", answer)}
+          />
+          {answers.dermatologistAdviceAnswer === DermatologistAdviceAnswer.YES ? (
+            <TextAnswer defaultValue={answers.dermatologistAdvice?.content ?? ""} onBlur={(userDermatologistAdvice) => saveAnswer("q8-advice", userDermatologistAdvice)} placeholder="Optionally add the diagnosis, advice or products your dermatologist recommended…" multiline />
           ) : null}
         </div>
       );
     }
 
-    return <SingleChoice options={standardOptions[question.id]} value={stringAnswer(question.id)} onChange={(value) => setSingle(question.id, value)} />;
+    if (!isStandardQuestionId(question.id)) return null;
+    const questionId = question.id;
+
+    const selectedAnswerByQuestionId: Record<StandardQuestionId, string> = {
+      q1: answers.afterCleansing ?? "",
+      q2: answers.middleDay ?? "",
+      q4: answers.reactiveSkin ?? "",
+      q9: answers.approach ?? "",
+      q10: answers.conversationMode ?? "",
+    };
+
+    return (
+      <SingleChoice
+        options={standardOptions[questionId]}
+        value={selectedAnswerByQuestionId[questionId]}
+        onChange={(answer) => saveAnswer(questionId, answer)}
+      />
+    );
   }
 
   if (isComplete) {
@@ -171,8 +199,8 @@ export function QuestionnaireDemo() {
 
           <div className="mt-10 grid w-full max-w-3xl gap-3 text-left sm:grid-cols-3">
             {[
-              { label: "Routine approach", value: stringAnswer("q9") || "Your choice" },
-              { label: "Conversation mode", value: stringAnswer("q10") || "Your choice" },
+              { label: "Routine approach", value: answers.approach || "Your choice" },
+              { label: "Conversation mode", value: answers.conversationMode || "Your choice" },
               { label: "First principle", value: "One change at a time" },
             ].map((item) => (
               <div key={item.label} className="rounded-[1.2rem] border border-black/[0.055] bg-white/65 p-4">
@@ -182,10 +210,10 @@ export function QuestionnaireDemo() {
             ))}
           </div>
 
-          <button type="button" className="mt-10 rounded-[0.9rem] bg-[#aa7c80] px-7 py-4 text-[12px] font-medium text-white shadow-[0_12px_28px_rgba(124,86,90,0.15)] transition hover:-translate-y-0.5 hover:bg-[#956a6e]">
+          <Link href="/login" className="mt-10 cursor-pointer rounded-[0.9rem] bg-[#aa7c80] px-7 py-4 text-[12px] font-medium text-white shadow-[0_12px_28px_rgba(124,86,90,0.15)] transition hover:-translate-y-0.5 hover:bg-[#956a6e]">
             Save my skin story
-          </button>
-          <p className="mt-3 text-[10px] font-normal text-[#aaa1a3]">Account creation will be connected here later.</p>
+          </Link>
+          <p className="mt-3 text-[10px] font-normal text-[#aaa1a3]">Sign in or create an account to continue.</p>
         </section>
       </QuestionnaireShell>
     );

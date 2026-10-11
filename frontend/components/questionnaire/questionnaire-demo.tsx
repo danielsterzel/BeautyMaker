@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CupcakeMascot } from "@/components/beauty-maker/cupcake-mascot";
 import {
   AfterCleansingAnswer,
@@ -97,6 +97,7 @@ const routineOptions: ChoiceOption[] = [
 
 export function QuestionnaireDemo() {
   const [step, setStep] = useState(0);
+  const [stepError, setStepError] = useState<string | null>(null);
 
   const answers = useQuestionnaireStore((store) => store.answers);
 
@@ -105,9 +106,29 @@ export function QuestionnaireDemo() {
   const isComplete = step === questions.length;
   const question = questions[Math.min(step, questions.length - 1)];
 
-  useEffect(() => {
-    console.log("NEW ANSWER: ", answers);
-  }, [answers])
+  function continueQuestionnaire() {
+    const requiredAnswerByQuestion = {
+      q1: answers.afterCleansing,
+      q2: answers.middleDay,
+      q4: answers.reactiveSkin,
+      q6: answers.lovedProductsAnswer,
+      q9: answers.approach,
+      q10: answers.conversationMode,
+    } as const;
+
+    if (
+      question.id in requiredAnswerByQuestion &&
+      !requiredAnswerByQuestion[
+        question.id as keyof typeof requiredAnswerByQuestion
+      ]
+    ) {
+      setStepError("Choose an answer before continuing.");
+      return;
+    }
+
+    setStepError(null);
+    setStep((current) => Math.min(questions.length, current + 1));
+  }
 
   function renderAnswer() {
     if (question.id === "q3") {
@@ -210,7 +231,7 @@ export function QuestionnaireDemo() {
             ))}
           </div>
 
-          <Link href="/login" className="mt-10 cursor-pointer rounded-[0.9rem] bg-[#aa7c80] px-7 py-4 text-[12px] font-medium text-white shadow-[0_12px_28px_rgba(124,86,90,0.15)] transition hover:-translate-y-0.5 hover:bg-[#956a6e]">
+          <Link href="/register" className="mt-10 cursor-pointer rounded-[0.9rem] bg-[#aa7c80] px-7 py-4 text-[12px] font-medium text-white shadow-[0_12px_28px_rgba(124,86,90,0.15)] transition hover:-translate-y-0.5 hover:bg-[#956a6e]">
             Save my skin story
           </Link>
           <p className="mt-3 text-[10px] font-normal text-[#aaa1a3]">Sign in or create an account to continue.</p>
@@ -228,12 +249,20 @@ export function QuestionnaireDemo() {
           <h1 className="mt-4 max-w-4xl text-[clamp(2rem,3.8vw,4rem)] font-light leading-[1.08] tracking-[-0.055em] text-[#484041]">{question.question}</h1>
           {question.supportingText ? <p className="mt-4 max-w-2xl text-[12px] font-normal leading-6 text-[#9d9496]">{question.supportingText}</p> : null}
           <div className="mt-8 w-full">{renderAnswer()}</div>
+          {stepError ? (
+            <p className="mt-4 text-[11px] font-medium text-[#a85f69]" role="alert">
+              {stepError}
+            </p>
+          ) : null}
         </div>
 
         <div className="mx-auto mt-10 flex w-full max-w-5xl items-center justify-between border-t border-black/[0.05] pt-5">
           <button
             type="button"
-            onClick={() => setStep((current) => Math.max(0, current - 1))}
+            onClick={() => {
+              setStepError(null);
+              setStep((current) => Math.max(0, current - 1));
+            }}
             disabled={step === 0}
             className="flex cursor-pointer items-center gap-2 px-2 py-2 text-[11px] font-normal text-[#8f8587] transition hover:text-[#4c4445] disabled:cursor-not-allowed disabled:opacity-30"
           >
@@ -242,7 +271,7 @@ export function QuestionnaireDemo() {
           <span className="hidden items-center gap-2 text-[9px] font-normal text-[#b0a7a9] sm:flex"><Sparkles size={12} /> There are no wrong answers.</span>
           <button
             type="button"
-            onClick={() => setStep((current) => Math.min(questions.length, current + 1))}
+            onClick={continueQuestionnaire}
             className="flex cursor-pointer items-center gap-2 rounded-[0.8rem] bg-[#4a4243] px-5 py-3 text-[11px] font-medium text-white transition hover:-translate-y-0.5 hover:bg-[#655a5c]"
           >
             {step === questions.length - 1 ? "See my skin story" : "Continue"} <ChevronRight size={14} />

@@ -2,12 +2,21 @@ from fastapi import FastAPI, Request
 import logging
 
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.api.api import router as api_router
 from app.api.auth import router as user_router
+from app.core.settings import settings
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.frontend_url.rstrip("/")],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
 

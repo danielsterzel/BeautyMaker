@@ -4,7 +4,7 @@ from unittest.mock import AsyncMock, Mock
 from uuid import uuid4
 
 import pytest
-from fastapi import HTTPException
+from fastapi import HTTPException, Response
 
 from app.api import auth
 from app.schemas.user import UserLoginRequest
@@ -50,16 +50,20 @@ def configure_valid_login(monkeypatch, user):
     monkeypatch.setattr(
         auth, "create_access_token", Mock(return_value="signed-access-token")
     )
+    monkeypatch.setattr(
+        auth, "create_refresh_token", Mock(return_value="signed-refresh-token")
+    )
 
 
 @pytest.mark.asyncio
 async def test_login_succeeds_and_updates_last_login(monkeypatch):
     user = make_user()
     session = FakeSession()
+    http_response = Response()
     before_login = datetime.now(timezone.utc)
     configure_valid_login(monkeypatch, user)
 
-    response = await auth.login(login_request(), session)
+    response = await auth.login(login_request(), http_response, session)
 
     assert response.tokens.access_token == "signed-access-token"
     assert response.user.id == user.id
@@ -71,6 +75,11 @@ async def test_login_succeeds_and_updates_last_login(monkeypatch):
     session.refresh.assert_awaited_once_with(
         user, attribute_names=["oauth_accounts", "questionnaire"]
     )
+    cookie = http_response.headers["set-cookie"]
+    assert "refresh_token=signed-refresh-token" in cookie
+    assert "HttpOnly" in cookie
+    assert "Path=/api/v1/auth" in cookie
+    assert "SameSite=lax" in cookie
 
 
 @pytest.mark.asyncio
@@ -85,7 +94,7 @@ async def test_login_rejects_unknown_email_with_generic_401(monkeypatch):
     monkeypatch.setattr(auth, "verify_password", verify)
 
     with pytest.raises(HTTPException) as error:
-        await auth.login(login_request(), session)
+        await auth.login(login_request(), Response(), session)
 
     assert error.value.status_code == 401
     assert error.value.detail == auth.INVALID_CREDENTIALS_MESSAGE
@@ -106,7 +115,7 @@ async def test_login_rejects_incorrect_password_with_generic_401(monkeypatch):
     monkeypatch.setattr(auth, "verify_password", Mock(return_value=False))
 
     with pytest.raises(HTTPException) as error:
-        await auth.login(login_request(), session)
+        await auth.login(login_request(), Response(), session)
 
     assert error.value.status_code == 401
     assert error.value.detail == auth.INVALID_CREDENTIALS_MESSAGE
@@ -120,7 +129,7 @@ async def test_login_rejects_inactive_user(monkeypatch):
     configure_valid_login(monkeypatch, user)
 
     with pytest.raises(HTTPException) as error:
-        await auth.login(login_request(), session)
+        await auth.login(login_request(), Response(), session)
 
     assert error.value.status_code == 403
     assert error.value.detail == "User account is inactive"
@@ -135,7 +144,7 @@ async def test_login_rejects_unverified_email(monkeypatch):
     configure_valid_login(monkeypatch, user)
 
     with pytest.raises(HTTPException) as error:
-        await auth.login(login_request(), session)
+        await auth.login(login_request(), Response(), session)
 
     assert error.value.status_code == 403
     assert error.value.detail == "Email is not verified"
@@ -148,7 +157,7 @@ async def test_login_response_contains_only_public_user_data(monkeypatch):
     user = make_user()
     configure_valid_login(monkeypatch, user)
 
-    response = await auth.login(login_request(), FakeSession())
+    response = await auth.login(login_request(), Response(), FakeSession())
     payload = response.model_dump(mode="json", by_alias=True)
 
     assert payload["tokens"] == {"accessToken": "signed-access-token"}
@@ -164,3 +173,81 @@ async def test_login_response_contains_only_public_user_data(monkeypatch):
     }
     assert "password_hash" not in payload["user"]
     assert "passwordHash" not in payload["user"]
+
+
+@pytest.mark.asyncio
+async def test_get_me_returns_authenticated_user_without_password_hash():
+    user = make_user()
+    session = FakeSession()
+
+    response = await auth.get_me(session, user)
+    payload = response.model_dump(mode="json", by_alias=True)
+
+    assert payload["id"] == str(user.id)
+    assert payload["email"] == user.email
+    assert payload["emailVerified"] is True
+    assert "password_hash" not in payload
+    assert "passwordHash" not in payload
+    session.refresh.assert_awaited_once_with(
+        user, attribute_names=["oauth_accounts", "questionnaire"]
+    )
+
+
+@pytest.mark.asyncio
+async def test_get_me_rejects_user_with_invalid_session_state():
+    user = make_user(is_active=False)
+    session = FakeSession()
+
+    with pytest.raises(HTTPException) as error:
+        await auth.get_me(session, user)
+
+    assert error.value.status_code == 401
+    assert error.value.detail == "Session is no longer valid"
+    session.refresh.assert_not_awaited()
+
+
+@pytest.mark.asyncio
+async def test_refresh_returns_new_access_token_for_active_verified_user(monkeypatch):
+    user = make_user()
+    session = FakeSession()
+    monkeypatch.setattr(
+        auth,
+        "decode_token",
+        Mock(return_value={"type": "refresh", "sub": str(user.id)}),
+    )
+    monkeypatch.setattr(
+        auth.UserRepository,
+        "get_by_id",
+        AsyncMock(return_value=user),
+    )
+    monkeypatch.setattr(
+        auth,
+        "create_access_token",
+        Mock(return_value="refreshed-access-token"),
+    )
+
+    response = await auth.refresh(session, "signed-refresh-token")
+
+    assert response.access_token == "refreshed-access-token"
+
+
+@pytest.mark.asyncio
+async def test_refresh_rejects_inactive_user(monkeypatch):
+    user = make_user(is_active=False)
+    session = FakeSession()
+    monkeypatch.setattr(
+        auth,
+        "decode_token",
+        Mock(return_value={"type": "refresh", "sub": str(user.id)}),
+    )
+    monkeypatch.setattr(
+        auth.UserRepository,
+        "get_by_id",
+        AsyncMock(return_value=user),
+    )
+
+    with pytest.raises(HTTPException) as error:
+        await auth.refresh(session, "signed-refresh-token")
+
+    assert error.value.status_code == 401
+    assert error.value.detail == "Session is no longer valid"

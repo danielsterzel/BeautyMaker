@@ -4,17 +4,19 @@ from typing import Annotated
 from uuid import UUID
 
 from aiosmtplib.errors import SMTPException
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Cookie, Depends, HTTPException, Response, status
 from jwt import InvalidTokenError
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.auth import get_current_user
 from app.db.dependency import get_db
 from app.db.repositories.email_verification_token import (
     EmailVerificationTokenRepository,
 )
 from app.db.repositories.user import UserRepository
 from app.db.services.user import UserDbService
+from app.core.settings import settings
 from app.models import User
 from app.models.email_verification_token import TOKEN_TTL_MINUTES, utc_now
 from app.schemas.user import (
@@ -34,7 +36,7 @@ from app.service.email import (
     hash_email_verification_token,
     send_verification_email,
 )
-from app.service.jwt_auth import create_access_token, decode_token
+from app.service.jwt_auth import create_access_token, create_refresh_token, decode_token
 from app.service.password_hasher import (
     hash_password,
     password_needs_rehash,
@@ -58,6 +60,17 @@ DUMMY_PASSWORD_HASH = (
     "dGVzdC1vbmx5LXNhbHQ$"
     "8Q7G3RJ2jvkpqpbTVnMs5iKGRpoIjlxVsDgWy0FjOGY"
 )
+
+
+# TODO: Refresh token security
+# - Verify that the user still exists and is active.
+# - Implement refresh token rotation and revocation.
+# - Add logout endpoint that invalidates the refresh token and clears the cookie.
+# - Review CSRF protection and cookie settings for production.
+# - Add rate limiting and tests for the refresh flow.
+
+# TODO Oauth:
+# do oauth
 
 
 async def _replace_verification_token(
@@ -138,6 +151,7 @@ async def register(
 @router.post("/login", response_model=UserLoginResponse)
 async def login(
     request: UserLoginRequest,
+    response: Response,
     db: Annotated[AsyncSession, Depends(get_db)],
 ):
     service = UserDbService(db)
@@ -176,10 +190,71 @@ async def login(
         if password_needs_rehash(password_hash):
             user.password_hash = hash_password(request.password)
 
-        user.last_login_at = utc_now()
+        last_login_at = utc_now()
+        user.last_login_at = last_login_at
         access_token = create_access_token(user.id)
 
         public_user = UserSchema(
+            id=user.id,
+            display_name=user.display_name,
+            email=user.email,
+            avatar_url=user.avatar_url,
+            email_verified=user.email_verified,
+            last_login_at=last_login_at,
+            oauth_accounts=[
+                OAuthAccountSchema.model_validate(account)
+                for account in user.oauth_accounts
+            ],
+            questionnaire=(
+                user.questionnaire.question_answers
+                if user.questionnaire is not None
+                else None
+            ),
+        )
+        login_response = UserLoginResponse(
+            tokens=TokenResponse(access_token=access_token),
+            user=public_user,
+        )
+        await db.commit()
+
+    except HTTPException:
+        await db.rollback()
+        raise
+    except SQLAlchemyError:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Something went wrong while logging in",
+        )
+
+    refresh_token = create_refresh_token(user.id)
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=settings.frontend_url.lower().startswith("https://"),
+        samesite="lax",
+        path="/api/v1/auth",
+        max_age=60 * 60 * 24 * 30,
+    )
+    return login_response
+
+
+@router.get("/me", response_model=UserSchema)
+async def get_me(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    user: Annotated[User, Depends(get_current_user)],
+):
+    if not user.is_active or not user.email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Session is no longer valid",
+        )
+
+    try:
+        await db.refresh(user, attribute_names=["oauth_accounts", "questionnaire"])
+        return UserSchema(
             id=user.id,
             display_name=user.display_name,
             email=user.email,
@@ -196,23 +271,11 @@ async def login(
                 else None
             ),
         )
-        response = UserLoginResponse(
-            tokens=TokenResponse(access_token=access_token),
-            user=public_user,
-        )
-        await db.commit()
-
-    except HTTPException:
-        await db.rollback()
-        raise
     except SQLAlchemyError:
-        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Something went wrong while logging in",
+            detail="Something went wrong while loading user",
         )
-
-    return response
 
 
 @router.post("/confirm-email", response_model=APIResponse)
@@ -226,26 +289,28 @@ async def confirm_email(
     confirmed = False
 
     try:
-        async with db.begin():
-            candidate = await token_repository.get_by_hash(token_hash)
+        candidate = await token_repository.get_by_hash(token_hash)
 
-            if candidate is not None:
-                # All flows lock the user before the token. Re-reading the token
-                # after acquiring both locks also handles a concurrent resend.
-                user = await user_repository.get_by_id_for_update(candidate.user_id)
-                token = await token_repository.get_by_hash_for_update(token_hash)
+        if candidate is not None:
+            # All flows lock the user before the token. Re-reading the token
+            # after acquiring both locks also handles a concurrent resend.
+            user = await user_repository.get_by_id_for_update(candidate.user_id)
+            token = await token_repository.get_by_hash_for_update(token_hash)
 
-                if token is not None:
-                    now = utc_now()
-                    if token.expires_at <= now:
-                        await token_repository.delete(token)
-                    elif user is not None:
-                        user.email_verified = True
-                        await token_repository.delete(token)
-                        await db.flush()
-                        confirmed = True
+            if token is not None:
+                now = utc_now()
+                if token.expires_at <= now:
+                    await token_repository.delete(token)
+                elif user is not None:
+                    user.email_verified = True
+                    await token_repository.delete(token)
+                    await db.flush()
+                    confirmed = True
+
+        await db.commit()
 
     except SQLAlchemyError:
+        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Something went wrong while confirming email",
@@ -270,31 +335,33 @@ async def resend_email(
     token_repository = EmailVerificationTokenRepository(db)
 
     try:
-        async with db.begin():
-            user = await user_repository.get_by_email_for_update(email)
-            if user is None or user.email_verified:
-                return APIResponse(success=True, message=GENERIC_RESEND_MESSAGE)
+        user = await user_repository.get_by_email_for_update(email)
+        if user is None or user.email_verified:
+            await db.commit()
+            return APIResponse(success=True, message=GENERIC_RESEND_MESSAGE)
 
-            current_token = await token_repository.get_by_user_id_for_update(user.id)
-            now = utc_now()
-            if (
-                current_token is not None
-                and current_token.created_at
-                > now - timedelta(seconds=RESEND_COOLDOWN_SECONDS)
-            ):
-                return APIResponse(success=True, message=GENERIC_RESEND_MESSAGE)
+        current_token = await token_repository.get_by_user_id_for_update(user.id)
+        now = utc_now()
+        if current_token is not None and current_token.created_at > now - timedelta(
+            seconds=RESEND_COOLDOWN_SECONDS
+        ):
+            await db.commit()
+            return APIResponse(success=True, message=GENERIC_RESEND_MESSAGE)
 
-            raw_token = await _replace_verification_token(
-                token_repository,
-                user_id=user.id,
-            )
-            verification_link = build_email_verification_link(raw_token)
-            await send_verification_email(email, verification_link)
+        raw_token = await _replace_verification_token(
+            token_repository,
+            user_id=user.id,
+        )
+        verification_link = build_email_verification_link(raw_token)
+        await send_verification_email(email, verification_link)
+        await db.commit()
 
     except (SMTPException, OSError, TimeoutError):
         # Rolling back token replacement preserves the last successfully sent link.
+        await db.rollback()
         logger.error("Verification email delivery failed during resend")
     except SQLAlchemyError:
+        await db.rollback()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Something went wrong while resending verification email",
@@ -310,8 +377,17 @@ async def reset_password(): ...
 # place for oauth login only google for now
 
 
-@router.post("/refresh")
-async def refresh(refresh_token: str):
+@router.post("/refresh", response_model=TokenResponse)
+async def refresh(
+    db: Annotated[AsyncSession, Depends(get_db)],
+    refresh_token: Annotated[str | None, Cookie()] = None,
+):
+    if refresh_token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing refresh token",
+        )
+
     try:
         payload = decode_token(refresh_token)
 
@@ -322,13 +398,21 @@ async def refresh(refresh_token: str):
             )
 
         user_id = UUID(payload["sub"])
+        user = await UserRepository(db).get_by_id(user_id)
+        if user is None or not user.is_active or not user.email_verified:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Session is no longer valid",
+            )
 
-        return {
-            "access_token": create_access_token(user_id),
-        }
-
+        return TokenResponse(access_token=create_access_token(user_id))
     except (InvalidTokenError, ValueError, KeyError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired refresh token",
+        )
+    except SQLAlchemyError:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Something went wrong while refreshing the session",
         )

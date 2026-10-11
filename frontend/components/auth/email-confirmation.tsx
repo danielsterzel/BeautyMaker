@@ -1,5 +1,6 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowRight,
   BadgeCheck,
@@ -12,10 +13,18 @@ import {
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 
 import { CupcakeMascot } from "@/components/beauty-maker/cupcake-mascot";
-import { confirmEmail } from "@/lib/api/auth";
+import {
+  type ResendEmailInput,
+  resendEmailSchema,
+} from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/client";
+import {
+  useConfirmEmailMutation,
+  useResendEmailMutation,
+} from "@/lib/hooks/use-auth";
 
 type ConfirmationState =
   | "verifying"
@@ -83,6 +92,68 @@ function StatusIcon({ state }: { state: ConfirmationState }) {
   return <RefreshCw className={sharedClassName} aria-hidden="true" />;
 }
 
+function ResendEmailForm() {
+  const resendMutation = useResendEmailMutation();
+  const [message, setMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ResendEmailInput>({
+    resolver: zodResolver(resendEmailSchema),
+    defaultValues: { email: "" },
+  });
+
+  const onSubmit = handleSubmit(async (values) => {
+    setMessage(null);
+    try {
+      await resendMutation.mutateAsync(values);
+      setMessage(
+        "If your account still needs verification, a fresh link has been sent.",
+      );
+    } catch {
+      setMessage("We could not send a new link. Please try again shortly.");
+    }
+  });
+
+  return (
+    <form onSubmit={onSubmit} className="space-y-3" noValidate>
+      <label className="block text-[10px] font-medium text-[#6e6466]">
+        Email address
+        <input
+          type="email"
+          autoComplete="email"
+          placeholder="you@example.com"
+          aria-invalid={Boolean(errors.email)}
+          className="mt-2 w-full rounded-[1rem] border border-black/[0.075] bg-white px-4 py-3.5 text-[12px] text-[#4e4647] outline-none transition placeholder:text-[#bbb2b3] focus:border-[#bd929d] focus:ring-4 focus:ring-[#ead9df]/45"
+          {...register("email")}
+        />
+      </label>
+      {errors.email ? (
+        <p className="text-[10px] font-medium text-[#a85f69]" role="alert">
+          {errors.email.message}
+        </p>
+      ) : null}
+      <button
+        type="submit"
+        disabled={resendMutation.isPending}
+        className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-[1rem] bg-[#aa7c80] px-5 py-4 text-[12px] font-medium text-white transition hover:bg-[#956a6e] disabled:cursor-wait disabled:opacity-65"
+      >
+        <RefreshCw
+          size={14}
+          className={resendMutation.isPending ? "animate-spin" : ""}
+        />
+        {resendMutation.isPending ? "Sending…" : "Send a fresh link"}
+      </button>
+      {message ? (
+        <p className="text-[10px] leading-5 text-[#786d6f]" aria-live="polite">
+          {message}
+        </p>
+      ) : null}
+    </form>
+  );
+}
+
 export function EmailConfirmation() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token")?.trim() ?? "";
@@ -91,6 +162,7 @@ export function EmailConfirmation() {
     token ? "verifying" : "missing",
   );
   const lastRequest = useRef<string | null>(null);
+  const { mutate: confirmEmail } = useConfirmEmailMutation();
 
   useEffect(() => {
     if (!token) {
@@ -106,13 +178,13 @@ export function EmailConfirmation() {
     lastRequest.current = requestKey;
     setState("verifying");
 
-    void confirmEmail(token)
-      .then(() => {
+    confirmEmail(token, {
+      onSuccess: () => {
         if (lastRequest.current === requestKey) {
           setState("success");
         }
-      })
-      .catch((error: unknown) => {
+      },
+      onError: (error: unknown) => {
         if (lastRequest.current !== requestKey) {
           return;
         }
@@ -123,8 +195,9 @@ export function EmailConfirmation() {
         }
 
         setState("error");
-      });
-  }, [retryCount, token]);
+      },
+    });
+  }, [confirmEmail, retryCount, token]);
 
   const copy = stateCopy[state];
   const isSuccess = state === "success";
@@ -249,13 +322,16 @@ export function EmailConfirmation() {
                 ) : null}
 
                 {state === "invalid" ? (
-                  <Link
-                    href="/login"
-                    className="flex w-full items-center justify-center gap-2 rounded-[1rem] border border-black/[0.075] bg-white px-5 py-4 text-[12px] font-medium text-[#665b5d] transition hover:-translate-y-0.5 hover:border-[#d6bdc5]"
-                  >
-                    Go to sign in
-                    <ArrowRight size={14} />
-                  </Link>
+                  <div className="space-y-3">
+                    <ResendEmailForm />
+                    <Link
+                      href="/login"
+                      className="flex w-full items-center justify-center gap-2 px-5 py-2 text-[11px] font-medium text-[#776a6c] transition hover:text-[#4c4445]"
+                    >
+                      Go to sign in
+                      <ArrowRight size={14} />
+                    </Link>
+                  </div>
                 ) : null}
 
                 {state === "missing" ? (

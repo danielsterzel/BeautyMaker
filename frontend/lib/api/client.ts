@@ -1,76 +1,142 @@
-
 import { env } from "../env";
 import { useAuthStore } from "../storage";
 
+const API_BASE_URL = `${env.NEXT_PUBLIC_API_URL.replace(/\/$/, "")}/api/v1`;
 
-const API_BASE_URL = `${env.NEXT_PUBLIC_API_URL}/api/v1`
-
-type HttpMethod = "GET" | "POST" | "DELETE" | "PATCH" | "PUT"
+type HttpMethod = "GET" | "POST" | "DELETE" | "PATCH" | "PUT";
 type RequestOptions = {
-    method?: HttpMethod,
-    body?: unknown
-    headers?: HeadersInit
-}
+  method?: HttpMethod;
+  body?: unknown;
+  headers?: HeadersInit;
+};
+
+type ErrorPayload = {
+  detail?: unknown;
+  message?: unknown;
+};
 
 export class ApiError extends Error {
-    constructor(public readonly status: number, statusText: string) {
-        super(`API ERROR: ${status} ${statusText}`)
-        this.name = "ApiError"
-    }
+  constructor(
+    public readonly status: number,
+    statusText: string,
+    public readonly detail?: unknown,
+  ) {
+    super(typeof detail === "string" ? detail : `API error: ${status} ${statusText}`);
+    this.name = "ApiError";
+  }
 }
 
+let refreshRequest: Promise<string> | null = null;
 
-async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T>
-{
-    const {method = "GET", body, headers} = options
+async function createApiError(response: Response) {
+  let payload: ErrorPayload | null = null;
 
-    const token = useAuthStore.getState().accessToken
+  try {
+    payload = (await response.json()) as ErrorPayload;
+  } catch {
+    // Some upstream errors do not include a JSON response body.
+  }
 
-    const requestHeaders = new Headers(headers);
+  return new ApiError(
+    response.status,
+    response.statusText,
+    payload?.detail ?? payload?.message,
+  );
+}
 
-    let requestBody: string | undefined
+export async function refreshSession(): Promise<string> {
+  if (refreshRequest) {
+    return refreshRequest;
+  }
 
-    if(body !== undefined)
-    {
-        requestHeaders.set("Content-Type", "application/json")
-        requestBody = JSON.stringify(body)
+  refreshRequest = (async () => {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      useAuthStore.getState().clearTokens();
+      throw await createApiError(response);
     }
 
-    if(token)
-    {
-        requestHeaders.set("Authorization", `Bearer ${token}`)
+    const payload = (await response.json()) as {
+      accessToken?: unknown;
+      access_token?: unknown;
+    };
+    const accessToken = payload.accessToken ?? payload.access_token;
+
+    if (typeof accessToken !== "string" || !accessToken) {
+      useAuthStore.getState().clearTokens();
+      throw new ApiError(500, "Invalid refresh response");
     }
 
-    const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
-        method,
-        headers: requestHeaders,
-        body: requestBody
-    })
-    
-    // add more checks on pydantic validation errors and other stuff
+    useAuthStore.getState().setToken(accessToken);
+    return accessToken;
+  })().finally(() => {
+    refreshRequest = null;
+  });
 
-    if(!response.ok)
-    {
-        throw new ApiError(response.status, response.statusText)
+  return refreshRequest;
+}
+
+async function request<T>(
+  endpoint: string,
+  options: RequestOptions = {},
+  canRetry = true,
+): Promise<T> {
+  const { method = "GET", body, headers } = options;
+  const token = useAuthStore.getState().accessToken;
+  const requestHeaders = new Headers(headers);
+  let requestBody: string | undefined;
+
+  if (body !== undefined) {
+    requestHeaders.set("Content-Type", "application/json");
+    requestBody = JSON.stringify(body);
+  }
+
+  if (token) {
+    requestHeaders.set("Authorization", `Bearer ${token}`);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/${endpoint}`, {
+    method,
+    headers: requestHeaders,
+    body: requestBody,
+    credentials: "include",
+  });
+
+  const isAuthenticationRequest =
+    endpoint === "auth/login" || endpoint === "auth/refresh";
+
+  if (response.status === 401 && canRetry && !isAuthenticationRequest) {
+    try {
+      await refreshSession();
+      return request<T>(endpoint, options, false);
+    } catch {
+      useAuthStore.getState().clearTokens();
     }
-    if(response.status === 204) // safe guard success without answer -> prevent .json on empty
-    {
-        return undefined as T
-    }
-    return await response.json()
+  }
+
+  if (!response.ok) {
+    throw await createApiError(response);
+  }
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
+  return (await response.json()) as T;
 }
 
 export const api = {
-    get: <T>(endpoint: string) => 
-        request<T>(endpoint, {method: "GET"}),
-    
-    post: <T>(endpoint: string, body: unknown) => 
-        request<T>(endpoint, {method: "POST", body}),
-
-    put: <T>(endpoint: string, body: unknown) => 
-        request<T>(endpoint, {method: "PUT", body}),
-    patch: <T>(endpoint: string, body: unknown) =>
-        request<T>(endpoint, {method: "PATCH", body}),
-    delete: <T>(endpoint: string) =>
-        request<T>(endpoint, {method: "DELETE"})
-}
+  get: <T>(endpoint: string) => request<T>(endpoint),
+  post: <T>(endpoint: string, body?: unknown) =>
+    request<T>(endpoint, { method: "POST", body }),
+  put: <T>(endpoint: string, body: unknown) =>
+    request<T>(endpoint, { method: "PUT", body }),
+  patch: <T>(endpoint: string, body: unknown) =>
+    request<T>(endpoint, { method: "PATCH", body }),
+  delete: <T>(endpoint: string) =>
+    request<T>(endpoint, { method: "DELETE" }),
+};

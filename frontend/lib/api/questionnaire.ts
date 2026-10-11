@@ -6,7 +6,7 @@ import {
 } from "@/components/questionnaire";
 import { api } from "./client";
 
-const PREFIX = "/questionnaires";
+const PREFIX = "questionnaires";
 
 export async function submitQuestionnaireAnswers(
   answers: QuestionnaireAnswersInput,

@@ -45,29 +45,33 @@ function parseProductNames(value: unknown) {
 }
 
 
-// refresh token in http cookie
+// The access token lives only in memory. The refresh token stays in an
+// HttpOnly cookie managed by the backend.
 type JWTTokenStoreData = {
   accessToken: string | null;
+  sessionInitialized: boolean;
 };
 type JWTTokenStoreActions = {
   setToken: (accessToken: string) => void;
   clearTokens: () => void;
+  markSessionInitialized: () => void;
 };
 
 type JWTTokenStore = JWTTokenStoreData & JWTTokenStoreActions;
 
-export const useAuthStore = create<JWTTokenStore>()
-(
-    updateToken => ({
-        accessToken: null,
-        setToken: (accessToken) => {
-            updateToken({accessToken});
-        },
-        clearTokens: () => {
-            updateToken({accessToken: null})
-        }
-    })
-);
+export const useAuthStore = create<JWTTokenStore>()((updateToken) => ({
+  accessToken: null,
+  sessionInitialized: false,
+  setToken: (accessToken) => {
+    updateToken({ accessToken, sessionInitialized: true });
+  },
+  clearTokens: () => {
+    updateToken({ accessToken: null, sessionInitialized: true });
+  },
+  markSessionInitialized: () => {
+    updateToken({ sessionInitialized: true });
+  },
+}));
 
 export const useQuestionnaireStore = create<QuestionnaireStore>()(
   persist(

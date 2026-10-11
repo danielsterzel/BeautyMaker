@@ -1,20 +1,22 @@
 "use client";
 
-import { streamAnalysis } from "@/lib/api/analysis";
+import { postNewAnalysis, streamAnalysis } from "@/lib/api/analysis";
 import { useMutation } from "@tanstack/react-query";
 import {
   ArrowLeft,
   ArrowRight,
   Bookmark,
+  Check,
   FlaskConical,
   MessageCircle,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { Allow, parse } from "partial-json";
+import { analysisWrite } from "@/lib/schemas/analysis";
 
 type SkinAnalysis = {
   concerns: string[];
@@ -22,7 +24,10 @@ type SkinAnalysis = {
   fullAnalysis: string;
 };
 
-function AnalysisActions() {
+function AnalysisActions({
+  onPostAnalysis,
+  finished,
+}: Readonly<{ onPostAnalysis: () => void; finished: boolean }>) {
   return (
     <div
       className="beautymaker-report-reveal mt-6 border-t border-[#e7e1e2] pt-6"
@@ -51,25 +56,45 @@ function AnalysisActions() {
 
       <div className="mt-4 grid gap-3 sm:grid-cols-2">
         <button
+          disabled={finished}
+          onClick={onPostAnalysis}
           type="button"
-          className="group flex items-center gap-3 rounded-[1rem] border border-[#e3dcdd] bg-white px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[#cddfe8] hover:shadow-[0_12px_30px_rgba(68,117,143,0.08)]"
+          className={`group flex items-center gap-3 rounded-[1rem] border px-4 py-3 text-left transition ${
+            finished
+              ? "cursor-default border-[#d3e5d7] bg-[#f3f8f4]"
+              : "cursor-pointer border-[#e3dcdd] bg-white hover:-translate-y-0.5 hover:border-[#cddfe8] hover:shadow-[0_12px_30px_rgba(68,117,143,0.08)]"
+          }`}
         >
-          <span className="grid h-9 w-9 place-items-center rounded-full bg-[#f5ebee] text-[#a46f78]">
-            <Bookmark size={15} strokeWidth={1.8} />
+          <span
+            className={`grid h-9 w-9 place-items-center rounded-full transition-colors ${
+              finished
+                ? "bg-[#e0efe3] text-[#5f8668]"
+                : "bg-[#f5ebee] text-[#a46f78]"
+            }`}
+          >
+            {finished ? (
+              <Check size={17} strokeWidth={2.2} aria-hidden="true" />
+            ) : (
+              <Bookmark size={15} strokeWidth={1.8} aria-hidden="true" />
+            )}
           </span>
           <span>
-            <span className="block text-[11px] font-semibold text-[#4a4243]">
-              Save analysis
+            <span
+              className={`block text-[11px] font-semibold ${finished ? "text-[#55765d]" : "text-[#4a4243]"}`}
+            >
+              {finished ? "Analysis saved" : "Save analysis"}
             </span>
-            <span className="mt-0.5 block text-[10px] text-[#978c8e]">
-              Keep it in your timeline
+            <span
+              className={`mt-0.5 block text-[10px] ${finished ? "text-[#78927e]" : "text-[#978c8e]"}`}
+            >
+              {finished ? "Added to your timeline" : "Keep it in your timeline"}
             </span>
           </span>
         </button>
 
         <button
           type="button"
-          className="group flex items-center gap-3 rounded-[1rem] border border-[#e3dcdd] bg-white px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[#d9d5e3] hover:shadow-[0_12px_30px_rgba(88,75,105,0.08)]"
+          className="group flex cursor-pointer items-center gap-3 rounded-[1rem] border border-[#e3dcdd] bg-white px-4 py-3 text-left transition hover:-translate-y-0.5 hover:border-[#d9d5e3] hover:shadow-[0_12px_30px_rgba(88,75,105,0.08)]"
         >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-[#eceaf3] text-[#7e7290]">
             <FlaskConical size={15} strokeWidth={1.8} />
@@ -90,8 +115,20 @@ function AnalysisActions() {
 
 export function InitialAdvice() {
   const [analysis, setAnalysis] = useState<Partial<SkinAnalysis>>({});
-
+  const [showSavedToast, setShowSavedToast] = useState(false);
   const analysisMutation = useMutation({
+    mutationFn: postNewAnalysis,
+    onSuccess: () => setShowSavedToast(true),
+  });
+
+  useEffect(() => {
+    if (!showSavedToast) return;
+
+    const timeoutId = window.setTimeout(() => setShowSavedToast(false), 3400);
+    return () => window.clearTimeout(timeoutId);
+  }, [showSavedToast]);
+
+  const streamAnalysisMutation = useMutation({
     mutationFn: () => {
       let buffer = "";
 
@@ -109,7 +146,7 @@ export function InitialAdvice() {
   });
 
   const analysisComplete =
-    analysisMutation.isSuccess && Boolean(analysis.fullAnalysis);
+    streamAnalysisMutation.isSuccess && Boolean(analysis.fullAnalysis);
 
   return (
     <main className="min-h-screen bg-white px-5 py-6 text-[#332e2f] sm:px-8 sm:py-8">
@@ -135,7 +172,7 @@ export function InitialAdvice() {
             <svg
               viewBox="0 0 112 112"
               className={`absolute inset-0 h-full w-full ${
-                analysisMutation.isPending ? "animate-spin" : ""
+                streamAnalysisMutation.isPending ? "animate-spin" : ""
               }`}
               style={{ animationDuration: "1.6s" }}
               aria-hidden="true"
@@ -148,7 +185,7 @@ export function InitialAdvice() {
                 stroke="#eee9eb"
                 strokeWidth="8"
               />
-              {analysisMutation.isPending && (
+              {streamAnalysisMutation.isPending && (
                 <circle
                   cx="56"
                   cy="56"
@@ -206,7 +243,12 @@ export function InitialAdvice() {
                   ))}
                 </div>
               ) : null}
-              <AnalysisActions />
+              <AnalysisActions
+                finished={analysisMutation.isSuccess}
+                onPostAnalysis={() =>
+                  analysisMutation.mutate(analysisWrite.parse(analysis))
+                }
+              />
             </div>
           ) : (
             <>
@@ -222,7 +264,7 @@ export function InitialAdvice() {
           {!analysisComplete ? (
             <button
               type="button"
-              onClick={() => analysisMutation.mutate()}
+              onClick={() => streamAnalysisMutation.mutate()}
               className="group mt-8 inline-flex cursor-pointer items-center justify-center gap-3 rounded-full bg-gradient-to-r from-[#6eb6d8] to-[#579fc5] px-7 py-3.5 text-[12px] font-semibold text-white shadow-[0_14px_32px_rgba(87,159,197,0.28)] transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(87,159,197,0.34)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#68a9ce] focus-visible:ring-offset-4"
             >
               <Sparkles size={16} aria-hidden="true" />
@@ -262,6 +304,28 @@ export function InitialAdvice() {
           </div>
         </section>
       </div>
+
+      {showSavedToast ? (
+        <div className="fixed bottom-5 left-1/2 z-50 w-[calc(100%-2.5rem)] max-w-sm -translate-x-1/2 sm:bottom-6 sm:left-auto sm:right-6 sm:translate-x-0">
+          <div
+            className="beautymaker-save-toast flex items-center gap-3 rounded-[1.15rem] border border-[#d5e5d8] bg-[#fbfdfb]/95 p-3.5 shadow-[0_18px_55px_rgba(67,96,74,0.16)] backdrop-blur-xl"
+            role="status"
+            aria-live="polite"
+          >
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-[#e2f0e5] text-[#5e8567]">
+              <Check size={18} strokeWidth={2.2} aria-hidden="true" />
+            </span>
+            <span>
+              <span className="block text-[12px] font-semibold text-[#435648]">
+                Analysis saved
+              </span>
+              <span className="mt-0.5 block text-[10px] text-[#7c8f81]">
+                You’ll find it in your timeline.
+              </span>
+            </span>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

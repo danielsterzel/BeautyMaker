@@ -47,6 +47,9 @@ class User(Base):
     last_login_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+    analyses: Mapped[list["Analysis"]] = relationship(
+        back_populates="user", cascade="all, delete-orphan"
+    )
 
     oauth_accounts: Mapped[list[OAuthAccount]] = relationship(
         back_populates="user",

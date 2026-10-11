@@ -39,8 +39,5 @@ class Product(Base):
     brand: Mapped["Brand"] = relationship(back_populates="products")
 
     is_sponsored: Mapped[bool] = mapped_column(
-        Boolean,
-        nullable=False,
-        default=False,
-        server_default="false"
+        Boolean, nullable=False, default=False, server_default="false"
     )

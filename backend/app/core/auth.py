@@ -47,3 +47,15 @@ async def get_current_user(
         )
 
     return user
+
+
+async def get_verified_user(
+    user: Annotated[User, Depends(get_current_user)],
+) -> User:
+    if not user.is_active or not user.email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Verified email is required",
+        )
+
+    return user

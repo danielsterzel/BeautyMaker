@@ -5,8 +5,9 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.api import router as api_router
+from app.api.questionnaire import router as api_router
 from app.api.auth import router as user_router
+from app.api.analysis import router as analysis_router
 from app.core.settings import settings
 
 app = FastAPI()
@@ -19,6 +20,7 @@ app.add_middleware(
 )
 app.include_router(api_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
+app.include_router(analysis_router, prefix="/api/v1")
 
 
 @app.get("/")

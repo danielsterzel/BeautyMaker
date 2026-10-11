@@ -39,10 +39,17 @@ async def questionnaire_answers(
     )
 
     if questionnaire_post.loved_products_answer == LovedProductsAnswer.YES:
-        answers_json["loved_products"] = questionnaire_post.loved_products
+        answers_json["loved_products"] = [
+            product.model_dump(mode="json")
+            for product in questionnaire_post.loved_products
+        ]
 
     if questionnaire_post.dermatologist_advice_answer == DermatologistAdviceAnswer.YES:
-        answers_json["dermatologist_advice"] = questionnaire_post.dermatologist_advice
+        answers_json["dermatologist_advice"] = (
+            questionnaire_post.dermatologist_advice.model_dump(mode="json")
+            if questionnaire_post.dermatologist_advice is not None
+            else None
+        )
 
     questionnaire = Questionnaire(
         user_id=user.id,

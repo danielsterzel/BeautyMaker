@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     google_smtp_password: str
     google_smtp_from_email: str
 
+    open_ai_key: str
+    open_ai_model: str
+
     @field_validator("jwt_private_key_path", "jwt_public_key_path", mode="before")
     @classmethod
     def resolve_jwt_key_path(cls, value: str | Path) -> Path:

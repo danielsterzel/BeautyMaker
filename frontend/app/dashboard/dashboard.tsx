@@ -2,10 +2,11 @@
 
 import {
   ArrowRight,
+  CalendarDays,
   Check,
   Clock3,
+  FlaskConical,
   Heart,
-  ShieldCheck,
   Sparkles,
 } from "lucide-react";
 import Link from "next/link";
@@ -16,6 +17,7 @@ import { CupcakeMascot } from "@/components/beauty-maker/cupcake-mascot";
 import { ApiError } from "@/lib/api/client";
 import { useCurrentUserQuery } from "@/lib/hooks/use-auth";
 import { useAuthStore } from "@/lib/storage";
+import { SkinTypeBadge } from "./skin-type-badge";
 
 function DashboardLoader() {
   return (
@@ -94,16 +96,27 @@ export function Dashboard() {
       <div className="pointer-events-none absolute -right-40 bottom-0 h-[34rem] w-[34rem] rounded-full bg-[#e2e0ee]/70 blur-[120px]" />
 
       <div className="relative mx-auto max-w-6xl">
-        <header className="flex items-center justify-between rounded-[1.35rem] border border-white/80 bg-[#fffdfb]/80 px-5 py-4 shadow-[0_14px_45px_rgba(79,59,64,0.06)] backdrop-blur-xl sm:px-7">
+        <header className="flex flex-col items-start gap-4 rounded-[1.35rem] border border-white/80 bg-[#fffdfb]/80 px-5 py-4 shadow-[0_14px_45px_rgba(79,59,64,0.06)] backdrop-blur-xl sm:flex-row sm:items-center sm:justify-between sm:px-7">
           <Link
             href="/"
-            className="text-lg font-bold tracking-[-0.055em] text-[#2d2829]"
+            className="shrink-0 text-lg font-bold tracking-[-0.055em] text-[#2d2829]"
           >
             BeautyMaker<span className="ml-1 text-xs text-[#ad777e]">✦</span>
           </Link>
-          <div className="flex items-center gap-2 rounded-full border border-[#dfcfd2] bg-[#fbf3f4] px-3 py-2 text-[10px] font-semibold text-[#8f6268]">
-            <span className="h-2 w-2 rounded-full bg-[#83a68c] shadow-[0_0_0_3px_rgba(131,166,140,0.14)]" />
-            Signed in
+          <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto sm:justify-end">
+            <div className="flex items-center gap-2 rounded-full border border-[#dfcfd2] bg-[#fbf3f4] px-3 py-2 text-[10px] font-semibold text-[#8f6268]">
+              <span className="h-2 w-2 rounded-full bg-[#83a68c] shadow-[0_0_0_3px_rgba(131,166,140,0.14)]" />
+              Signed in
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full border border-[#dce6de] bg-[#f1f6f2] px-3 py-2 text-[10px] font-semibold text-[#67806d]">
+              <Check size={12} strokeWidth={2.2} />
+              Email verified
+            </div>
+            <div className="flex items-center gap-1.5 rounded-full border border-[#e5e0e8] bg-[#f6f3f8] px-3 py-2 text-[10px] font-medium text-[#756d7b]">
+              <Clock3 size={12} strokeWidth={1.9} />
+              <span className="text-[#9a929e]">Last sign-in</span>
+              <span className="font-semibold text-[#655d69]">{lastLogin}</span>
+            </div>
           </div>
         </header>
 
@@ -124,6 +137,7 @@ export function Dashboard() {
                 You are signed in as <strong className="font-semibold text-[#4a4243]">{user.email}</strong>.
                 This is the beginning of your calm, personal skincare space.
               </p>
+              <SkinTypeBadge questionnaire={user.questionnaire} />
             </div>
 
             <div className="relative mx-auto grid h-44 w-44 place-items-center rounded-full bg-[#f3e5e6]/75 lg:mx-4">
@@ -135,54 +149,66 @@ export function Dashboard() {
         </section>
 
         <section className="mt-5 grid gap-5 md:grid-cols-3">
-          <article className="rounded-[1.65rem] border border-white/80 bg-[#fffdfb]/82 p-6 shadow-[0_18px_55px_rgba(79,59,64,0.06)] backdrop-blur-xl">
+          <Link
+            href="#"
+            className="group flex min-h-[17rem] flex-col rounded-[1.65rem] border border-white/80 bg-[#fffdfb]/82 p-6 shadow-[0_18px_55px_rgba(79,59,64,0.06)] backdrop-blur-xl transition-colors hover:border-[#dce5dd] hover:bg-[#fffdfb] sm:p-8"
+          >
             <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#e9f0e9] text-[#63816a]">
-              <ShieldCheck size={20} />
+              <CalendarDays size={20} strokeWidth={1.8} />
             </span>
-            <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9d9293]">
-              Account
-            </p>
-            <h2 className="mt-2 text-xl font-medium tracking-[-0.035em]">
-              Email verified
-            </h2>
-            <div className="mt-4 flex items-center gap-2 text-[11px] text-[#718174]">
-              <Check size={14} /> Your account is ready
+            <div className="mt-auto pt-8">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9d9293]">
+                Your progress
+              </p>
+              <h2 className="mt-2 text-xl font-medium tracking-[-0.035em]">
+                My timeline
+              </h2>
+              <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold text-[#718174]">
+                Follow your skin story <ArrowRight size={14} />
+              </span>
             </div>
-          </article>
+          </Link>
 
-          <article className="rounded-[1.65rem] border border-white/80 bg-[#fffdfb]/82 p-6 shadow-[0_18px_55px_rgba(79,59,64,0.06)] backdrop-blur-xl">
-            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#f5e7ec] text-[#a36f78]">
-              <Heart size={20} />
-            </span>
-            <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9d9293]">
-              Skin story
-            </p>
-            <h2 className="mt-2 text-xl font-medium tracking-[-0.035em]">
-              {user.questionnaire ? "Saved with care" : "Ready when you are"}
-            </h2>
-            <Link
-              href="/questionnaire"
-              className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold text-[#98666e] transition hover:gap-3"
-            >
-              {user.questionnaire ? "Review your answers" : "Tell your skin story"}
-              <ArrowRight size={14} />
-            </Link>
-          </article>
-
-          <article className="rounded-[1.65rem] border border-white/80 bg-[#fffdfb]/82 p-6 shadow-[0_18px_55px_rgba(79,59,64,0.06)] backdrop-blur-xl">
+          <Link
+            href="/dashboard/initial-advice"
+            className="group flex min-h-[17rem] flex-col rounded-[1.65rem] border border-white/80 bg-[#fffdfb]/82 p-6 shadow-[0_18px_55px_rgba(79,59,64,0.06)] backdrop-blur-xl transition-colors hover:border-[#ddd8e5] hover:bg-[#fffdfb] sm:p-8"
+          >
             <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#eceaf3] text-[#7e7290]">
-              <Clock3 size={20} />
+              <FlaskConical size={20} strokeWidth={1.8} />
             </span>
-            <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9d9293]">
-              Last sign-in
-            </p>
-            <h2 className="mt-2 text-lg font-medium tracking-[-0.03em]">
-              {lastLogin}
-            </h2>
-            <p className="mt-4 text-[11px] leading-5 text-[#8a8081]">
-              Your access token stays only in this browser tab&apos;s memory.
-            </p>
-          </article>
+            <div className="mt-auto pt-8">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9d9293]">
+                Personalized guidance
+              </p>
+              <h2 className="mt-2 text-xl font-medium tracking-[-0.035em]">
+                Initial skin analysis
+              </h2>
+              <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold text-[#776b87]">
+                Get your analysis <ArrowRight size={14} />
+              </span>
+            </div>
+          </Link>
+
+          <Link
+            href="#"
+            className="group flex min-h-[17rem] flex-col rounded-[1.65rem] border border-white/80 bg-[#fffdfb]/82 p-6 shadow-[0_18px_55px_rgba(79,59,64,0.06)] backdrop-blur-xl transition-colors hover:border-[#ead5da] hover:bg-[#fffdfb] sm:p-8"
+          >
+            <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#f5e7ec] text-[#a36f78]">
+              <Heart size={20} strokeWidth={1.8} />
+            </span>
+            <div className="mt-auto pt-8">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.15em] text-[#9d9293]">
+                Skin story
+              </p>
+              <h2 className="mt-2 text-xl font-medium tracking-[-0.035em]">
+                {user.questionnaire ? "Saved with care" : "Ready when you are"}
+              </h2>
+              <span className="mt-4 inline-flex items-center gap-2 text-[11px] font-semibold text-[#98666e]">
+                {user.questionnaire ? "Review your answers" : "Tell your skin story"}
+                <ArrowRight size={14} />
+              </span>
+            </div>
+          </Link>
         </section>
 
         <footer className="flex items-center justify-between px-2 py-8 text-[10px] text-[#9b9192]">

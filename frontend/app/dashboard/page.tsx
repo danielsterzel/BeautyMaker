@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { Dashboard } from "@/components/dashboard/dashboard";
+import { Dashboard } from "./dashboard";
 
 export const metadata: Metadata = {
   title: "Your dashboard — BeautyMaker",

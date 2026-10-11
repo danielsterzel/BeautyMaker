@@ -161,7 +161,7 @@ export default function Home() {
               <div className="mt-9 flex flex-col items-start gap-5 sm:flex-row sm:items-center">
                 <a
                   href="#join"
-                  className="rounded-[0.85rem] border border-[#9e7376] bg-[#aa7c80] px-6 py-3.5 text-[12px] font-medium tracking-[0.01em] text-white shadow-[0_10px_24px_rgba(124,86,90,0.14)] transition hover:-translate-y-0.5 hover:bg-[#956a6e]"
+                  className="rounded-[0.85rem] border border-[#9e7376] bg-[#aa7c80] px-6 py-3.5 text-[12px] font-medium tracking-[0.01em] text-white shadow-[0_10px_24px_rgba(124,86,90,0.14)] transition hover:bg-[#956a6e] duration-200"
                 >
                   Start your skin story&nbsp; ↗
                 </a>
@@ -306,7 +306,7 @@ export default function Home() {
       </section>
 
       <section id="care" className="mx-auto grid w-[94%] max-w-[1460px] gap-4 lg:grid-cols-[1.08fr_0.92fr]">
-        <article className="relative min-h-[34rem] overflow-hidden rounded-[2.2rem] bg-[#202022] p-8 text-white sm:p-14 lg:p-20">
+        <article className="relative min-h-[34rem] overflow-hidden rounded-[2.2rem] bg-[#202022] p-8 text-white sm:p-14 lg:p-20 hover:scale-[1.02] duration-200 cursor-default">
           <div className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#f0cddd]/20 blur-[70px]" />
           <ShieldCheck size={27} strokeWidth={1.5} className="relative" />
           <div className="relative mt-28 max-w-2xl">
@@ -316,7 +316,7 @@ export default function Home() {
           </div>
         </article>
 
-        <article className="flex min-h-[34rem] flex-col rounded-[2.2rem] bg-gradient-to-br from-[#e4f1fa] to-[#f8e7ee] p-8 sm:p-14">
+        <article className="flex min-h-[34rem] flex-col rounded-[2.2rem] bg-gradient-to-br from-[#e4f1fa] to-[#f8e7ee] p-8 sm:p-14 hover:scale-[1.02] duration-200 cursor-default">
           <Stethoscope size={27} strokeWidth={1.5} />
           <div className="mt-auto">
             <span className="text-[10px] font-semibold uppercase tracking-[0.15em] text-zinc-500">Health before experimentation</span>
@@ -333,7 +333,7 @@ export default function Home() {
           <h2 className="mt-8 text-[clamp(2.9rem,5.4vw,5.8rem)] font-light leading-[1.02] tracking-[-0.06em]">
             Ready to learn what your skin <em className="font-light italic text-[#ad777e]">loves?</em>
           </h2>
-          <p className="mt-7 max-w-xl text-[14px] font-medium leading-7 text-zinc-500">Join the early list and be among the first to build a routine around evidence from your own skin.</p>
+          <p className="mt-7 max-w-xl text-[14px] font-medium leading-7 text-zinc-500 cursor-pointer">Join the early list and be among the first to build a routine around evidence from your own skin.</p>
 
           {submitted ? (
             <div className="mt-9 flex items-center gap-3 rounded-full border border-black/10 bg-white/80 px-6 py-4 text-[13px] font-semibold shadow-lg backdrop-blur"><Check size={18} /> You&apos;re on the list. Thank you.</div>
@@ -341,7 +341,7 @@ export default function Home() {
             <form onSubmit={submit} className="mt-9 flex w-full max-w-lg flex-col gap-2 rounded-[1.35rem] border border-black/[0.08] bg-white/75 p-2 shadow-[0_14px_38px_rgba(55,45,49,0.08)] backdrop-blur sm:flex-row sm:rounded-full">
               <label className="sr-only" htmlFor="email">Email address</label>
               <input id="email" type="email" required autoComplete="email" placeholder="you@example.com" className="min-h-12 flex-1 rounded-full bg-transparent px-5 text-[13px] font-medium outline-none placeholder:text-zinc-400" />
-              <button type="submit" className="min-h-12 rounded-full bg-[#202022] px-6 text-[12px] font-semibold text-white transition hover:bg-zinc-700">Join the early list</button>
+              <button type="submit" className="min-h-12 rounded-full bg-[#202022] px-6 text-[12px] font-semibold text-white transition hover:bg-zinc-700 cursor-pointer">Join the early list</button>
             </form>
           )}
           <p className="mt-3 text-[10px] font-medium text-zinc-400">No noise. Just thoughtful updates.</p>
@@ -356,3 +356,4 @@ export default function Home() {
     </main>
   );
 }
+

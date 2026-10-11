@@ -136,7 +136,8 @@ export const useQuestionnaireStore = create<QuestionnaireStore>()(
     }),
     {
       name: "questionnaire-storage",
-      storage: createJSONStorage(() => sessionStorage),
+      // TODO: Remove persisted questionnaire answers after 15 minutes.
+      storage: createJSONStorage(() => localStorage),
     },
   ),
 );

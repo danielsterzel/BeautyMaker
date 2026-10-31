@@ -7,6 +7,12 @@
   --text-primary: #171717;
   --text-secondary: #77736F;
   --text-tertiary: #B7B4AE;
+  --charcoal: #211E1C;
+  --muted-blue: #95BDD0;
+  --ice: #E4F2F7;
+  --cold-surface: #F0F4F5;
+  --olive: #7E8B74;
+  --blush: #CBB8B0;
 }
 
 @theme inline {
@@ -16,11 +22,18 @@
   --color-primary: var(--text-primary);
   --color-secondary: var(--text-secondary);
   --color-tertiary: var(--text-tertiary);
+
+  --color-charcoal: var(--charcoal);
+  --color-muted-blue: var(--muted-blue);
+  --color-ice: var(--ice);
+  --color-cold-surface: var(--cold-surface);
+  --color-olive: var(--olive);
+  --color-blush: var(--blush);
 }
 
 
 body {
   background: var(--offwhite);
-  color: var(--text-primary);
+  color: var(--charcoal);
   font-family: Arial, Helvetica, sans-serif;
 }

@@ -17,7 +17,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className= {`h-full antialiased`}
+      className= {`h-full antialiased scroll-smooth`}
     >
       <body className={`${montserrat.className} min-h-full flex flex-col bg-offwhite`}>{children}</body>
     </html>

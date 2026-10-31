@@ -4,13 +4,8 @@ import Link from "next/link";
 export function How() {
   return (
     <div className="px-6 flex flex-col gap-2">
-      <div className="flex justify-between items-center">
-        <p className="text-secondary tracking-widest uppercase text-sm">
-          Aurelia - the process
-        </p>
-        <Plus className="w-6 h-6" />
-      </div>
-      <div className="bg-secondary h-px w-full" />
+
+
         <div className="min-h-[65vh] grid grid-cols-[auto_auto] justify-center items-center gap-24">
         <Header />
         <AureliaProcess />

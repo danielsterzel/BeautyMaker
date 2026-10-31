@@ -1,8 +1,9 @@
 import { Navbar } from "./Navbar";
 import { Landing } from "./Landing";
 import { Plus } from "lucide-react";
-import "../public/mohamed-hamdi-_Yca73BgigE-unsplash.jpg";
 import { How } from "./How";
+import { Purpose } from "./Purpose";
+import { SectionSeparator } from "./SectionSeparator";
 
 export default function Home() {
   return (
@@ -42,7 +43,16 @@ export default function Home() {
           </aside>
         </div>
       </div>
+    <SectionSeparator text="Aurelia - the process"/>
+      <section id="how-it-works">
       <How />
+      </section>
+
+      <SectionSeparator text="What we strive for"/>
+
+      <section id="our-purpose">
+        <Purpose />
+      </section>
     </div>
   );
 }

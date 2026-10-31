@@ -15,8 +15,8 @@ export function Navbar() {
     text-secondary
     items-center justify-between font-medium"
         >
-          <UnderlineLink href="/">Join Us</UnderlineLink>
-          <UnderlineLink href="/">Getting started</UnderlineLink>
+          <UnderlineLink href="/register">Join Us</UnderlineLink>
+          <UnderlineLink href="#how-it-works">Getting started</UnderlineLink>
           <UnderlineLink href="/">Our Purpose</UnderlineLink>
           <UnderlineLink href="/">The Science behind</UnderlineLink>
         </ul>

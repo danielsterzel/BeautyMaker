@@ -104,7 +104,7 @@ function Header() {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col gap-2">
-        <p className="text-xs text-tertiary uppercase tracking-widest">
+        <p className="text-xs text-honey uppercase tracking-widest">
           Our methodology
         </p>
 

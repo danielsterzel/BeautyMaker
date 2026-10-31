@@ -20,9 +20,16 @@ export function Purpose() {
         <div>
           <Header />
 
-          <div className="flex flex-col gap-12">
-            <div className="flex gap-10 items-center">
-              <Layers className="w-10 h-10 text-tertiary" strokeWidth={1.0} />
+          <div className="flex flex-col gap-3">
+            <div className="group bg-peach/50  hover:bg-peach tranistion-colors duration-300
+             p-3 rounded-lg flex gap-10 items-center ">
+              <div className="bg-offwhite rounded-lg p-2">
+                <Layers
+                  className="transitioon-colors duration-300
+                w-10 h-10 text-tertiary group-hover:text-honey"
+                  strokeWidth={1.0}
+                />
+              </div>
 
               <Goal
                 title="Personalized and evolving"
@@ -30,19 +37,33 @@ export function Purpose() {
               tolerance."
               />
             </div>
-            <div className="flex gap-10 items-center">
-              <FlaskConical
-                className="w-10 h-10 text-tertiary"
-                strokeWidth={1.0}
-              />
+            <div className="group bg-peach/50  hover:bg-peach tranistion-colors duration-300
+             p-3 rounded-lg flex gap-10 items-center ">
+              <div className="bg-offwhite rounded-lg p-2">
+                <FlaskConical
+                  className="transitioon-colors duration-300
+                w-10 h-10 text-tertiary group-hover:text-honey"
+                  strokeWidth={1.0}
+                />
+              </div>
               <Goal
                 title="Evidence-based and transparent"
                 text="Explore ingredients, see how they interact and follow
           experiments with clear, data-informed insights"
               />
             </div>
-            <div className="flex gap-10 items-center ">
-              <Heart className="w-10 h-10 text-tertiary" strokeWidth={1.0} />
+            <div
+              className="group bg-peach/50 hover:bg-peach tranistion-colors duration-300
+             p-3 rounded-lg flex gap-10 items-center "
+            >
+              <div className="bg-offwhite rounded-lg p-2 ">
+                <Heart
+                  className="
+                transitioon-colors duration-300
+                w-10 h-10 text-tertiary group-hover:text-honey"
+                  strokeWidth={1.0}
+                />
+              </div>
               <Goal
                 title="A supportive approach"
                 text="We focus on healthy, realistic progress and aim to
@@ -58,11 +79,9 @@ export function Purpose() {
         <div className="bg-tertiary h-px w-full" />
 
         <div className="py-12 flex items-start gap-10">
-          {/* Section label */}
           <p className="text-sm text-secondary uppercase tracking-widest whitespace-nowrap shrink-0 self-center">
             THE PROGRESS OVER TIME
           </p>
-
           {/* Step 1 */}
           <div className="flex flex-1 min-w-0 gap-3 items-start">
             <Camera
@@ -155,7 +174,7 @@ function Header() {
     <div className="py-14 flex flex-col gap-2 items-left">
       <div
         className="text-sm tracking-widest uppercase
-            text-tertiary
+            text-honey
             flex gap-2 items-center
             "
       >

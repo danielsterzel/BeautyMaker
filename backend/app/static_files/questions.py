@@ -7,6 +7,6 @@ QUESTIONNAIRE = {
     "loved_products": "Are there products your skin already loves?",
     "q7": "Anything your skin definitely doesn't like?",
     "q8": "Are you currently following any skincare advice from a dermatologist?",
-    "q9": "How would you like BeautyMaker to approach your routine?",
-    "q10": "And finally — how should BeautyMaker talk to you?",
+    "q9": "How would you like Aurelia to approach your routine?",
+    "q10": "And finally — how should Aurelia talk to you?",
 }

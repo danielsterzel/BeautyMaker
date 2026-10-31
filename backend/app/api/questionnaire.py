@@ -63,3 +63,7 @@ async def questionnaire_answers(
     await session.refresh(questionnaire)
 
     return questionnaire
+
+
+@router.get("/get")
+async def get_questionnaire(): ...

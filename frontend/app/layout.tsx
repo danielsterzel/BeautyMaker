@@ -1,35 +1,25 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
-
-import { Providers } from "@/components/providers";
-
+import { Montserrat } from "next/font/google";
 import "./globals.css";
 
-const montserrat = localFont({
-  src: [
-    { path: "./fonts/montserrat-300.ttf", weight: "300", style: "normal" },
-    { path: "./fonts/montserrat-300-italic.ttf", weight: "300", style: "italic" },
-    { path: "./fonts/montserrat-400.ttf", weight: "400", style: "normal" },
-    { path: "./fonts/montserrat-500.ttf", weight: "500", style: "normal" },
-    { path: "./fonts/montserrat-600.ttf", weight: "600", style: "normal" },
-    { path: "./fonts/montserrat-700.ttf", weight: "700", style: "normal" },
-    { path: "./fonts/montserrat-800.ttf", weight: "800", style: "normal" },
-  ],
-  display: "swap",
-});
+
+const montserrat = Montserrat({
+  subsets:["latin"],
+
+})
 
 export const metadata: Metadata = {
-  title: "BeautyMaker — skincare that learns with you",
-  description:
-    "Thoughtful skincare experiments and honest progress tracking, built around how your skin actually responds.",
+  title: "Aurelia",
+  description: "Skincare Optimized for you",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${montserrat.className} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <Providers>{children}</Providers>
-      </body>
+    <html
+      lang="en"
+      className= {`h-full antialiased`}
+    >
+      <body className={`${montserrat.className} min-h-full flex flex-col bg-offwhite`}>{children}</body>
     </html>
   );
 }

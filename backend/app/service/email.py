@@ -69,8 +69,8 @@ async def send_verification_email(recipient: str, link: str) -> None:
 
     message["From"] = settings.google_smtp_from_email
     message["To"] = recipient
-    message["Subject"] = "BeautyMaker✨ Confirm your email"
-    message.set_content(f"Confirm your BeautyMaker email: {link}")
+    message["Subject"] = "Aurelia✨ Confirm your email"
+    message.set_content(f"Confirm your Aurelia email: {link}")
     message.add_alternative(html, subtype="html")
 
     client = await authenticate_client()

@@ -18,7 +18,7 @@ export default function Home() {
 
           <aside className="relative aspect-[4/5] w-full max-w-[480px] justify-self-center self-center overflow-hidden rounded-sm lg:aspect-auto lg:h-[calc(100svh-10rem)] lg:min-h-[560px] lg:max-h-[900px]">
             <img
-              src="/valeria-lendel-0b_7r_dNjFs-unsplash.jpg"
+              src="/landing.jpg"
               alt="Beauty editorial portrait"
               className="h-full w-full object-cover object-center"
             />
@@ -28,13 +28,13 @@ export default function Home() {
               bg-gradient-to-t from-black/85 via-charcoal/35 to-transparent
               "
             />
-            {/* <SkinGlossary /> */}
-            <p className="select-none absolute top-10 left-6 text-xs tracking-widest">
+            <SkinGlossary />
+            <p className="select-none absolute top-10 left-6 text-xs text-white tracking-widest">
               FIG. 01 / AURELIA
             </p>
 
             <Plus
-              className="absolute right-6 top-10 w-6 h-6 text-charcoal"
+              className="absolute right-6 top-10 w-6 h-6 text-white"
               strokeWidth={1.0}
             />
             <p className="text-white select-none absolute bottom-12 left-6 text-[10px] tracking-widest uppercase">
@@ -72,7 +72,7 @@ function SkinGlossary() {
           Visible radiance
         </p>
 
-        <p className="mt-2 text-3xl font-light">+34%</p>
+        <p className="mt-2 text-xl font-light">Improved</p>
       </div>
 
       <div

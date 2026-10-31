@@ -9,10 +9,12 @@
   --text-tertiary: #B7B4AE;
   --charcoal: #211E1C;
   --muted-blue: #95BDD0;
-  --ice: #E4F2F7;
+  --peach: #F3DDD0;
   --cold-surface: #F0F4F5;
   --olive: #7E8B74;
   --blush: #CBB8B0;
+  --champagne: #EBD4BD;
+  --honey: #C9A16A;
 }
 
 @theme inline {
@@ -20,12 +22,13 @@
   --color-foreground: var(--foreground);
   --color-offwhite: var(--offwhite);
   --color-primary: var(--text-primary);
+  --color-honey: var(--honey);
   --color-secondary: var(--text-secondary);
   --color-tertiary: var(--text-tertiary);
-
+  --color-champagne: var(--champagne);
   --color-charcoal: var(--charcoal);
   --color-muted-blue: var(--muted-blue);
-  --color-ice: var(--ice);
+  --color-peach: var(--peach);
   --color-cold-surface: var(--cold-surface);
   --color-olive: var(--olive);
   --color-blush: var(--blush);

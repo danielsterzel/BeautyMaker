@@ -1,45 +1,171 @@
-import { CircleStar } from "lucide-react"
+import {
+  ArrowRight,
+  Camera,
+  ChartColumn,
+  CircleStar,
+  FlaskConical,
+  Heart,
+  Layers,
+  Sparkle,
+} from "lucide-react";
 
-export function Purpose()
-{
-    return (
+export function Purpose() {
+  return (
     <div className="px-8 h-[65vh] w-full">
-
-        <div className="
+      <div
+        className="
         select-none
-        flex justify-between items-center">
-        <Header/>
-        <div className="bg-charcoal rounded-2xl
-        text-white w-fit px-4 py-2
-        flex items-center gap-2
-        ">
-        <CircleStar 
-        strokeWidth={0.5}
+        grid grid-cols-[1fr_1fr]  items-center"
+      >
+        <div>
+          <Header />
 
-        className="w-6 h-6"/>
-        <p className="text-[8px] font-light
-        tracking-widest uppercase">
-            Our core principles</p></div>
+          <div className="flex flex-col gap-12">
+            <div className="flex gap-10 items-center">
+              <Layers className="w-10 h-10 text-tertiary" strokeWidth={1.0} />
+
+              <Goal
+                title="Personalized and evolving"
+                text="Recommendations adjust to your skin's responses, goals and
+              tolerance."
+              />
+            </div>
+            <div className="flex gap-10 items-center">
+              <FlaskConical
+                className="w-10 h-10 text-tertiary"
+                strokeWidth={1.0}
+              />
+              <Goal
+                title="Evidence-based and transparent"
+                text="Explore ingredients, see how they interact and follow
+          experiments with clear, data-informed insights"
+              />
+            </div>
+            <div className="flex gap-10 items-center ">
+              <Heart className="w-10 h-10 text-tertiary" strokeWidth={1.0} />
+              <Goal
+                title="A supportive approach"
+                text="We focus on healthy, realistic progress and aim to
+          reduce the risk of body dysmorphia and unrealistic expectations"
+              />
+            </div>
+          </div>
         </div>
- 
+        <div className="relative flex flex-col items-center">some images</div>
+      </div>
 
-    </div>)
+      <div className="p-12">
+        <div className="bg-tertiary h-px w-full" />
+
+        <div className="py-12 flex items-start gap-10">
+          {/* Section label */}
+          <p className="text-sm text-secondary uppercase tracking-widest whitespace-nowrap shrink-0 self-center">
+            THE PROGRESS OVER TIME
+          </p>
+
+          {/* Step 1 */}
+          <div className="flex flex-1 min-w-0 gap-3 items-start">
+            <Camera
+              className="w-8 h-8 shrink-0 text-secondary"
+              strokeWidth={1}
+            />
+            <div className="flex flex-col gap-1">
+              <h4 className="text-md font-medium">1. Add a photo</h4>
+              <p className="text-xs text-secondary">
+                Check your skin and set a baseline.
+              </p>
+            </div>
+          </div>
+
+          <ArrowRight
+            className="w-8 h-8 shrink-0 self-center text-secondary"
+            strokeWidth={1}
+          />
+
+          {/* Step 2 */}
+          <div className="flex flex-1 min-w-0 gap-3 items-start">
+            <FlaskConical
+              className="w-8 h-8 shrink-0 text-secondary"
+              strokeWidth={1}
+            />
+            <div className="flex flex-col gap-1">
+              <h4 className="text-md font-medium">2. Run an experiment</h4>
+              <p className="text-xs text-secondary">
+                Introduce a change, e.g. a new ingredient or concentration.
+              </p>
+            </div>
+          </div>
+
+          <ArrowRight
+            className="w-8 h-8 shrink-0 self-center text-secondary"
+            strokeWidth={1}
+          />
+
+          {/* Step 3 */}
+          <div className="flex flex-1 min-w-0 gap-3 items-start">
+            <ChartColumn
+              className="w-8 h-8 shrink-0 text-secondary"
+              strokeWidth={1}
+            />
+            <div className="flex flex-col gap-1">
+              <h4 className="text-md font-medium">3. Track your progress</h4>
+              <p className="text-xs text-secondary">
+                See how your skin responds over time.
+              </p>
+            </div>
+          </div>
+
+          <ArrowRight
+            className="w-8 h-8 shrink-0 self-center text-secondary"
+            strokeWidth={1}
+          />
+
+          {/* Step 4 */}
+          <div className="flex flex-1 min-w-0 gap-3 items-start">
+            <Sparkle
+              className="w-8 h-8 shrink-0 text-secondary"
+              strokeWidth={1}
+            />
+            <div className="flex flex-col gap-1">
+              <h4 className="text-md font-medium">4. Get updated guidance</h4>
+              <p className="text-xs text-secondary">
+                Recommendations evolve based on your results and goals.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-tertiary h-px w-full" />
+      </div>
+    </div>
+  );
 }
 
-function Header()
-{
-    return(       <div className="py-14 flex flex-col gap-2 items-left">
-            <div className="text-sm tracking-widest uppercase
+function Goal({ title, text }: Readonly<{ title: string; text: string }>) {
+  return (
+    <div className="flex flex-col gap-0">
+      <h2 className="text-lg ">{title}</h2>
+      <p className="text-secondary text-xs">{text}</p>
+    </div>
+  );
+}
+
+function Header() {
+  return (
+    <div className="py-14 flex flex-col gap-2 items-left">
+      <div
+        className="text-sm tracking-widest uppercase
             text-tertiary
             flex gap-2 items-center
-            ">Our purpouse </div>
-            <h1 className="text-5xl max-w-xl">Long term Skincare
-            </h1>
-            <p className="text-secondary text-lg max-w-xl">
-                Aurelia helps you understand your skin, 
-                build an effective routine and refine it over time
-                - through real feedback, not guesswork
-            </p>
-
-        </div>)
+            "
+      >
+        Our purpose
+      </div>
+      <h1 className="text-5xl max-w-xl">Long term Skincare</h1>
+      <p className="text-secondary text-lg max-w-xl">
+        Aurelia helps you understand your skin, build an effective routine and
+        refine it over time - through real feedback, not guesswork
+      </p>
+    </div>
+  );
 }

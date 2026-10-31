@@ -17,7 +17,7 @@ export function Navbar() {
         >
           <UnderlineLink href="/register">Join Us</UnderlineLink>
           <UnderlineLink href="#how-it-works">Getting started</UnderlineLink>
-          <UnderlineLink href="/">Our Purpose</UnderlineLink>
+          <UnderlineLink href="#our-purpose">Our Purpose</UnderlineLink>
           <UnderlineLink href="/">The Science behind</UnderlineLink>
         </ul>
       </nav>

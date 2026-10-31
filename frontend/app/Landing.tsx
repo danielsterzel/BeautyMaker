@@ -22,8 +22,10 @@ export function Landing() {
       <div className="w-full">
         <Title />
       </div>
-
+      <div className="py-12">
       <QuickStory />
+
+      </div>
     </div>
   );
 }
@@ -118,7 +120,7 @@ function Title() {
       <div className="flex flex-col gap-2 max-w-lg">
         <EyebrowHeading />
       </div>
-      <div className="w-fit max-w-full flex flex-col gap-6">
+      <div className="w-fit max-w-full flex flex-col gap-2">
         <h1 className="text-[clamp(2.5rem,9vw,4.5rem)] lg:text-[clamp(2.5rem,5.5vw,4.5rem)] tracking-[0.3rem] uppercase">aurelia</h1>
         <CoolSeparator />
       </div>
@@ -137,7 +139,9 @@ function Title() {
 
 function EyebrowHeading() {
   return (
-    <p className="font-light tracking-widest uppercase text-xs text-secondary">
+    <p className="font-light tracking-widest uppercase
+    text-honey
+     text-xs ">
       routine meets science
     </p>
   );

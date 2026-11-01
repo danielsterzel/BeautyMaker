@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import "./globals.css";
-
+import { Providers } from "./provider/provider";
+import { AppToaster } from "./components/AppToaster";
 
 const montserrat = Montserrat({
-  subsets:["latin"],
-
-})
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Aurelia",
@@ -15,11 +15,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className= {`h-full antialiased scroll-smooth`}
-    >
-      <body className={`${montserrat.className} min-h-full flex flex-col bg-offwhite`}>{children}</body>
+    <html lang="en" className={`h-full antialiased scroll-smooth`}>
+      <body
+        className={`${montserrat.className} min-h-full flex flex-col bg-offwhite`}
+      >
+        <Providers>{children}<AppToaster/></Providers>
+      </body>
     </html>
   );
 }

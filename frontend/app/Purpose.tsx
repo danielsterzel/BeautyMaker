@@ -11,7 +11,7 @@ import {
 
 export function Purpose() {
   return (
-    <div className="px-8 h-[65vh] w-full">
+    <div className="px-8 w-full">
       <div
         className="
         select-none
@@ -19,7 +19,6 @@ export function Purpose() {
       >
         <div>
           <Header />
-
           <div className="flex flex-col gap-3">
             <div className="group bg-peach/50  hover:bg-peach tranistion-colors duration-300
              p-3 rounded-lg flex gap-10 items-center ">

@@ -3,28 +3,32 @@
 import Link from "next/link";
 import { ArrowUpRight, Droplets, FlaskConical, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
+import { ScanFaceIcon } from "lucide-react";
 
 export function Landing() {
   return (
     <div className="@container flex w-full min-w-0 flex-col justify-center gap-8 lg:min-h-full lg:gap-12">
-      <div className="pointer-events-none flex flex-wrap items-center gap-4 lg:ml-8">
-        <img src="/olive-branch.png" alt="" className="block w-36 h-auto shrink-0" />
-
-        <div className="min-w-0 flex flex-col gap-1">
-          <span className="text-[10px] tracking-[0.2em] uppercase text-secondary">
-            Botanical Study
-          </span>
-          <span className="text-[9px] tracking-widest text-tertiary">
-            FIG. 02 / AURELIA
-          </span>
+      <div className="px-8">
+        <div
+          className="relative px-2 w-fit uppercase tracking-wide flex gap-4 items-center
+        border border-tertiary backdrop-blur-2xl text-sm rounded-3xl p-1"
+        >
+          <div className="bg-champagne rounded-full p-1">
+            <ScanFaceIcon className="w-6 h-6 shrink-0 text-taupe-700" />
+          </div>
+          <div className="text-xs flex flex-col gap-1">
+            <h3 className="">Personalized skincare engine</h3>
+          <p className="text-[10px] text-secondary">
+            Science meets personalization
+          </p>
+          </div>
         </div>
       </div>
       <div className="w-full">
         <Title />
       </div>
       <div className="py-12">
-      <QuickStory />
-
+        <QuickStory />
       </div>
     </div>
   );
@@ -121,17 +125,18 @@ function Title() {
         <EyebrowHeading />
       </div>
       <div className="w-fit max-w-full flex flex-col gap-2">
-        <h1 className="text-[clamp(2.5rem,9vw,4.5rem)] lg:text-[clamp(2.5rem,5.5vw,4.5rem)] tracking-[0.3rem] uppercase">aurelia</h1>
+        <h1 className="text-4xl tracking-wider uppercase">
+          Skincare, intelligently designed
+        </h1>
         <CoolSeparator />
       </div>
 
-      <p className="text-secondary max-w-lg text-right text-xs">
-        A more personal approach to radiant skin. Guided by science, designed
-        around you.
+      <p className="text-secondary max-w-lg text-left text-xs">
+      Understand your skin, explore ingredients, and build a personalized routine guided by science.
       </p>
       <div className="flex flex-wrap items-center gap-3 mt-2 sm:gap-6">
         <DiscoverAurelia />
-        <Methodology/>
+        <Methodology />
       </div>
     </div>
   );
@@ -139,10 +144,12 @@ function Title() {
 
 function EyebrowHeading() {
   return (
-    <p className="font-light tracking-widest uppercase
+    <p
+      className="font-light tracking-widest uppercase
     text-honey
-     text-xs ">
-      routine meets science
+     text-md "
+    >
+      Meet aurelia
     </p>
   );
 }
@@ -156,8 +163,7 @@ function CoolSeparator() {
   );
 }
 
-function Methodology()
-{
+function Methodology() {
   return (
     <Link
       href="/methodology"

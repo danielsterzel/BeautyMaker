@@ -15,6 +15,7 @@
   --blush: #CBB8B0;
   --champagne: #EBD4BD;
   --honey: #C9A16A;
+  --deep-champagne: #B98755;
 }
 
 @theme inline {
@@ -32,6 +33,7 @@
   --color-cold-surface: var(--cold-surface);
   --color-olive: var(--olive);
   --color-blush: var(--blush);
+  --color-deep-champagne: var(--deep-champagne);
 }
 
 

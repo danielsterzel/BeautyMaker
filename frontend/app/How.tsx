@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 export function How() {
   return (
     <div className="px-6 flex flex-col gap-2">
-      <div className="min-h-[65vh] grid grid-cols-[auto_auto] justify-center items-center gap-24  py-16">
+      <div className="min-h-[min(65svh,640px)] grid grid-cols-[auto_auto] justify-center items-center gap-24 py-16">
         <div className="py-4">
           <Header />
         </div>

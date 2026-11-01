@@ -19,6 +19,8 @@ export function Navbar() {
           <UnderlineLink href="#how-it-works">Getting started</UnderlineLink>
           <UnderlineLink href="#our-purpose">Our Purpose</UnderlineLink>
           <UnderlineLink href="/">The Science behind</UnderlineLink>
+          <UnderlineLink href="/login">Login</UnderlineLink>
+          <UnderlineLink href="/onboarding">Onboarding</UnderlineLink>
         </ul>
       </nav>
       <div className="hidden shrink-0 justify-end sm:flex xl:flex-1">

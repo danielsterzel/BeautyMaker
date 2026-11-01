@@ -1,9 +1,44 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, ArrowLeft } from "lucide-react";
+import { ArrowUpRight, ArrowLeft, Check, Circle } from "lucide-react";
+import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { executeRegister } from "@/lib/auth-service";
+import { toast } from "sonner";
 
 export default function Register() {
+
+  const [displayName, setDisplayName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [retypedPassword, setRetypedPassword] = useState("")
+
+  const register = useMutation({
+    mutationFn: executeRegister,
+    onSuccess: () => {
+      toast.success("Account has been created", {
+        description: "Check your email and confirm your account."
+      })
+    },
+    onError: (error) => {
+      toast.error("Couldn't create the account", {
+        description: error.message
+      })
+    }
+  })
+
+  const passwordRules = [
+  { label: "12–256 characters", met: password.length >= 12 && password.length <= 256 },
+  { label: "One uppercase letter", met: /[A-Z]/.test(password) },
+  { label: "One lowercase letter", met: /[a-z]/.test(password) },
+  { label: "One number", met: /[0-9]/.test(password) },
+  {
+    label: "One special character",
+    met: /[^A-Za-z0-9\s]/.test(password),
+  },
+  ];
+  
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <div className="absolute inset-0 bg-[#EAD5C5]">
@@ -33,7 +68,7 @@ export default function Register() {
 
       <div className="absolute inset-0 bg-white/10" />
 
-      <div className="relative z-10 flex min-h-screen items-center justify-center px-6 py-12 lg:justify-end lg:px-16 xl:px-24">
+      <div className="relative z-10 flex min-h-screen items-center justify-center px-6 pt-28 pb-12 lg:justify-end lg:px-16 xl:px-24">
         <div
           className="w-full max-w-[480px] rounded-2xl
           bg-offwhite p-8 shadow-2xl shadow-charcoal/10
@@ -50,8 +85,46 @@ export default function Register() {
             <form
               id="register-form"
               className="flex flex-col gap-5"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (register.isPending) return
+
+                if(retypedPassword !== password){
+                  toast.error("Coulnd't finalize registration", {
+                    description: "Passwords must match!"
+                  })
+                  return
+                }
+                
+                register.mutate({displayName, email, password})
+              }}
             >
+              <div className="flex flex-col gap-2">
+                <label
+                  htmlFor="display-name"
+                  className="text-sm tracking-wider text-secondary"
+                >
+                  How would you like to be called?
+                </label>
+                <input
+                  id="display-name"
+                  name="displayName"
+                  type="text"
+                  autoComplete="nickname"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  required
+                  minLength={3}
+                  maxLength={120}
+                  placeholder="Your name or nickname"
+                  className="w-full min-w-0 rounded-md border
+                  border-charcoal/30 bg-transparent px-4 py-3
+                  text-sm outline-none transition-colors
+                  placeholder:text-secondary/60
+                  focus:border-charcoal"
+                />
+              </div>
+
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="email"
@@ -64,6 +137,7 @@ export default function Register() {
                   name="email"
                   type="email"
                   autoComplete="email"
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="your@email.com"
                   className="w-full min-w-0 rounded-md border
@@ -85,9 +159,13 @@ export default function Register() {
                   id="password"
                   name="password"
                   type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   autoComplete="new-password"
+                  aria-describedby="password-requirements"
                   required
-                  minLength={8}
+                  minLength={12}
+                  maxLength={256}
                   placeholder="Enter your password"
                   className="w-full min-w-0 rounded-md border
                   border-charcoal/30 bg-transparent px-4 py-3
@@ -95,6 +173,37 @@ export default function Register() {
                   placeholder:text-secondary/60
                   focus:border-charcoal"
                 />
+                <div id="password-requirements" className="mt-1 rounded-xl border border-tertiary/25 bg-cold-surface/40 px-4 py-3">
+                  <p className="mb-3 text-xs text-secondary">
+                    Your password needs:
+                  </p>
+                  <ul className="grid grid-cols-1 gap-x-4 gap-y-2.5 sm:grid-cols-2">
+                    {passwordRules.map((rule) => {
+                      const Icon = rule.met ? Check : Circle;
+
+                      return (
+                        <li
+                          key={rule.label}
+                          className={`flex items-center gap-2 text-xs transition-colors duration-200 ${
+                            rule.met ? "text-olive" : "text-secondary"
+                          }`}
+                        >
+                          <Icon
+                            aria-hidden="true"
+                            className="size-3.5 shrink-0"
+                            strokeWidth={rule.met ? 1.75 : 1}
+                          />
+                          <span>
+                            <span className="sr-only">
+                              {rule.met ? "Met: " : "Not met: "}
+                            </span>
+                            {rule.label}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -109,8 +218,10 @@ export default function Register() {
                   name="repeatPassword"
                   type="password"
                   autoComplete="new-password"
+                  onChange={(e) => setRetypedPassword(e.target.value)}
                   required
-                  minLength={8}
+                  minLength={12}
+                  maxLength={256}
                   placeholder="Repeat your password"
                   className="w-full min-w-0 rounded-md border
                   border-charcoal/30 bg-transparent px-4 py-3

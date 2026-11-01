@@ -1,9 +1,41 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
-
+import { useMutation } from "@tanstack/react-query";
+import { executeLogin } from "@/lib/auth-service";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { useEffect } from "react";
+import { getMe } from "@/lib/auth-api";
+import { useAuth } from "@/lib/auth-storage";
 export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
+
+  const login = useMutation({
+    mutationFn: executeLogin,
+    onSuccess: () => {
+      toast.success("Welcome again!");
+      router.replace("/onboarding");
+    },
+    onError: () => {
+      toast.error("Something went wrong", {
+        description: "Check if you put in" + "correct email and / or login",
+      });
+    },
+  });
+
+  const user = useAuth().user;
+  useEffect(() => {
+
+    if (user) {
+      router.replace("/onboarding");
+    }
+  }, [user, router]);
+
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       <div className="absolute inset-0 bg-[#EAD5C5]">
@@ -16,16 +48,16 @@ export default function Login() {
       <Link
         href="/"
         className="
-    absolute top-8 left-8 z-20
-    flex items-center gap-3
-    rounded-full
-    border border-white/40
-    bg-white/70 px-5 py-3
-    text-sm font-medium tracking-wider
-    text-charcoal backdrop-blur-md
-    transition-all duration-300
-    hover:bg-white hover:-translate-x-1
-  "
+          absolute top-8 left-8 z-20
+          flex items-center gap-3
+          rounded-full
+          border border-white/40
+          bg-white/70 px-5 py-3
+          text-sm font-medium tracking-wider
+          text-charcoal backdrop-blur-md
+          transition-all duration-300
+          hover:bg-white hover:-translate-x-1
+        "
       >
         <ArrowLeft size={18} strokeWidth={1.5} />
         Back to home
@@ -50,7 +82,11 @@ export default function Login() {
             <form
               id="login-form"
               className="flex flex-col gap-5"
-              onSubmit={(e) => e.preventDefault()}
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (login.isPending) return;
+                login.mutate({ email, password });
+              }}
             >
               <div className="flex flex-col gap-2">
                 <label
@@ -66,6 +102,7 @@ export default function Login() {
                   autoComplete="email"
                   required
                   placeholder="your@email.com"
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full min-w-0 rounded-md border
                   border-charcoal/30 bg-transparent px-4 py-3
                   text-sm outline-none transition-colors
@@ -86,6 +123,7 @@ export default function Login() {
                   name="password"
                   type="password"
                   autoComplete="current-password"
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder="Enter your password"
                   className="w-full min-w-0 rounded-md border
@@ -102,6 +140,7 @@ export default function Login() {
                 items-center justify-center gap-3 rounded-md
                 bg-charcoal px-5 py-3.5 text-white
                 transition-opacity duration-300 group"
+                onClick={() => login.mutate({ email, password })}
               >
                 <p className="text-sm tracking-widest">Log in</p>
                 <ArrowUpRight

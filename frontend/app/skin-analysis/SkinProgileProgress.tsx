@@ -2,10 +2,10 @@
 
 "use client";
 
-import { useOnboarding } from "./OnboardingContext";
+import { useSkinAnalysis } from "./SkinAnalysisContext";
 
 export function SkinProfileProgress() {
-  const { currentStep, totalSteps } = useOnboarding();
+  const { currentStep, totalSteps } = useSkinAnalysis();
 
   return (
     <div className="flex flex-col gap-2">

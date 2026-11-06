@@ -4,12 +4,11 @@ import Link from "next/link";
 import { useState } from "react";
 import { ArrowUpRight, ArrowLeft } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
-import { executeLogin } from "@/lib/auth-service";
+import { executeLogin } from "@/lib/auth/auth-service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useEffect } from "react";
-import { getMe } from "@/lib/auth-api";
-import { useAuth } from "@/lib/auth-storage";
+import { useMe } from "@/lib/hooks/useMe";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,7 +18,7 @@ export default function Login() {
     mutationFn: executeLogin,
     onSuccess: () => {
       toast.success("Welcome again!");
-      router.replace("/onboarding");
+      router.replace("/skin-analysis");
     },
     onError: () => {
       toast.error("Something went wrong", {
@@ -28,17 +27,18 @@ export default function Login() {
     },
   });
 
-  const user = useAuth().user;
+  const {data: user, isPending} = useMe()
+
   useEffect(() => {
 
     if (user) {
-      router.replace("/onboarding");
+      router.replace("/skin-analysis");
     }
   }, [user, router]);
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="absolute inset-0 bg-[#EAD5C5]">
+      <div className="absolute inset-0 bg-champagne">
         <img
           src="/register.jpg"
           alt="Skincare ingredients"
@@ -140,7 +140,6 @@ export default function Login() {
                 items-center justify-center gap-3 rounded-md
                 bg-charcoal px-5 py-3.5 text-white
                 transition-opacity duration-300 group"
-                onClick={() => login.mutate({ email, password })}
               >
                 <p className="text-sm tracking-widest">Log in</p>
                 <ArrowUpRight

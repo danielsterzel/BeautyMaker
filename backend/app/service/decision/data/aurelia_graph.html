@@ -1,0 +1,163 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 850px;
+                 background-color: white;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "orange", "font": {"color": "black"}, "id": "LINDERA ERYTHROCARPA PHYTOPLACENTA EXTRACT", "label": "LINDERA ERYTHROCARP...", "shape": "dot", "size": 15, "title": "LINDERA ERYTHROCARPA PHYTOPLACENTA EXTRACT"}, {"color": "orange", "font": {"color": "black"}, "id": "RIBES RUBRUM CALLUS EXTRACT", "label": "RIBES RUBRUM CALLUS...", "shape": "dot", "size": 15, "title": "RIBES RUBRUM CALLUS EXTRACT"}, {"color": "orange", "font": {"color": "black"}, "id": "VITIS VINIFERA FRUIT MERISTEM CELL CULTURE", "label": "VITIS VINIFERA FRUI...", "shape": "dot", "size": 15, "title": "VITIS VINIFERA FRUIT MERISTEM CELL CULTURE"}, {"color": "orange", "font": {"color": "black"}, "id": "DEFINED CELL CULTURE MEDIA 8", "label": "DEFINED CELL CULTUR...", "shape": "dot", "size": 15, "title": "DEFINED CELL CULTURE MEDIA 8"}, {"color": "orange", "font": {"color": "black"}, "id": "VIGNA ANGULARIS SEED EXTRACT", "label": "VIGNA ANGULARIS SEE...", "shape": "dot", "size": 15, "title": "VIGNA ANGULARIS SEED EXTRACT"}, {"color": "orange", "font": {"color": "black"}, "id": "C18-70 ISOPARAFFIN", "label": "C18-70 ISOPARAFFIN", "shape": "dot", "size": 15, "title": "C18-70 ISOPARAFFIN"}, {"color": "orange", "font": {"color": "black"}, "id": "VANILLYLIDENE PENTANEDIONE", "label": "VANILLYLIDENE PENTA...", "shape": "dot", "size": 15, "title": "VANILLYLIDENE PENTANEDIONE"}, {"color": "orange", "font": {"color": "black"}, "id": "ZINC DOCOSAHEXAENOATE HYDROXIDE", "label": "ZINC DOCOSAHEXAENOA...", "shape": "dot", "size": 15, "title": "ZINC DOCOSAHEXAENOATE HYDROXIDE"}, {"color": "orange", "font": {"color": "black"}, "id": "ASTROCARYUM TUCUMA SEED OIL", "label": "ASTROCARYUM TUCUMA ...", "shape": "dot", "size": 15, "title": "ASTROCARYUM TUCUMA SEED OIL"}, {"color": "lightblue", "font": {"color": "black"}, "id": "SKIN PROTECTING", "label": "SKIN PROTECTING", "shape": "dot", "size": 30, "title": "SKIN PROTECTING"}, {"color": "orange", "font": {"color": "black"}, "id": "PALMARIA PALMATA EXTRACT", "label": "PALMARIA PALMATA EX...", "shape": "dot", "size": 15, "title": "PALMARIA PALMATA EXTRACT"}, {"color": "orange", "font": {"color": "black"}, "id": "CAMELLIA SINENSIS CALLUS EXTRACT", "label": "CAMELLIA SINENSIS C...", "shape": "dot", "size": 15, "title": "CAMELLIA SINENSIS CALLUS EXTRACT"}, {"color": "orange", "font": {"color": "black"}, "id": "OLIGOPEPTIDE-12", "label": "OLIGOPEPTIDE-12", "shape": "dot", "size": 15, "title": "OLIGOPEPTIDE-12"}, {"color": "orange", "font": {"color": "black"}, "id": "KLUYVEROMYCES/LACTOBACILLUS/CINNAMOMUM CAMPHORA BARK OIL FERMENT FILTRATE", "label": "KLUYVEROMYCES/LACTO...", "shape": "dot", "size": 15, "title": "KLUYVEROMYCES/LACTOBACILLUS/CINNAMOMUM CAMPHORA BARK OIL FERMENT FILTRATE"}, {"color": "orange", "font": {"color": "black"}, "id": "LACTOBACILLUS/GRAPE FRUIT JUICE/SODIUM GLUTAMATE FERMENT", "label": "LACTOBACILLUS/GRAPE...", "shape": "dot", "size": 15, "title": "LACTOBACILLUS/GRAPE FRUIT JUICE/SODIUM GLUTAMATE FERMENT"}, {"color": "orange", "font": {"color": "black"}, "id": "DECAPEPTIDE-6", "label": "DECAPEPTIDE-6", "shape": "dot", "size": 15, "title": "DECAPEPTIDE-6"}]);
+                  edges = new vis.DataSet([{"arrows": "to", "color": "gray", "from": "LINDERA ERYTHROCARPA PHYTOPLACENTA EXTRACT", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "RIBES RUBRUM CALLUS EXTRACT", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "VITIS VINIFERA FRUIT MERISTEM CELL CULTURE", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "DEFINED CELL CULTURE MEDIA 8", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "VIGNA ANGULARIS SEED EXTRACT", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "C18-70 ISOPARAFFIN", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "VANILLYLIDENE PENTANEDIONE", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "ZINC DOCOSAHEXAENOATE HYDROXIDE", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "ASTROCARYUM TUCUMA SEED OIL", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "PALMARIA PALMATA EXTRACT", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "CAMELLIA SINENSIS CALLUS EXTRACT", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "OLIGOPEPTIDE-12", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "KLUYVEROMYCES/LACTOBACILLUS/CINNAMOMUM CAMPHORA BARK OIL FERMENT FILTRATE", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "LACTOBACILLUS/GRAPE FRUIT JUICE/SODIUM GLUTAMATE FERMENT", "to": "SKIN PROTECTING"}, {"arrows": "to", "color": "gray", "from": "DECAPEPTIDE-6", "to": "SKIN PROTECTING"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "barnesHut": {
+            "avoidOverlap": 0,
+            "centralGravity": 0.1,
+            "damping": 0.7,
+            "gravitationalConstant": -3000,
+            "springConstant": 0.02,
+            "springLength": 180
+        },
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

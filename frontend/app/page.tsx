@@ -1,6 +1,6 @@
 import { Navbar } from "./Navbar";
 import { Landing } from "./Landing";
-import { Activity, ArrowUpRight, Layers, Leaf, Plus, User } from "lucide-react";
+import { ArrowUpRight, Layers, Leaf, Plus, User } from "lucide-react";
 import { How } from "./How";
 import { Purpose } from "./Purpose";
 import { SectionSeparator } from "./SectionSeparator";
@@ -9,7 +9,7 @@ import type { LucideIcon } from "lucide-react/types";
 export default function Home() {
   return (
     <div className="mx-auto w-full max-w-[1440px]">
-      <div className="w-full min-h-[min(100svh,820px)] flex flex-col">
+      <div className="w-full min-h-[min(100svh,820px)] flex flex-col mb-12 lg:mb-16">
         <Navbar />
 
         <div className="flex-1 grid grid-cols-1 gap-8 px-6 pt-6 pb-8 sm:px-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,40%)] lg:gap-10 lg:pl-0 lg:pr-12 xl:gap-16">
@@ -31,12 +31,15 @@ export default function Home() {
                 className="h-full w-full object-cover object-center"
               />
 
+              <div className="pointer-events-none absolute inset-0  mix-blend-soft-light" />
+
               <div
                 className="
               pointer-events-none absolute inset-x-0 bottom-0 h-[42%]
               bg-gradient-to-t from-black/85 via-charcoal/35 to-transparent
               "
               />
+              <SkinAnnotations />
             </div>
             <GlossAdnotation />
 
@@ -52,17 +55,11 @@ export default function Home() {
               ILLUSTRATIVE SKIN PROFILE / 001
             </p>
 
-            <div className="absolute top-[20%] -left-20 flex flex-col gap-8">
+            <div className="absolute top-[20%] -left-20 flex flex-col gap-12">
               <SkinAnalysisCard
                 icon={User}
                 heading="skin profile" 
                 text="Combination · Sensitive"
-              />
-              <SkinAnalysisCard
-                icon={Activity}
-                heading="concerns"
-                text="Texture · Changes"
-                translate={true}
               />
               <SkinAnalysisCard
                 icon={Leaf}
@@ -108,16 +105,43 @@ export function SkinAnalysisCard({
 
   return (
     <div
-      className={`${translate ? "-translate-x-4" : ""} flex items-center justify-between rounded-2xl ring-1 ring-inset ring-white/30
+      className={`${translate ? "-translate-x-4" : ""} flex items-center justify-between rounded-2xl ring-1 ring-inset ring-white/15
    gap-2 text-white px-2 py-1 w-56 min-h-16
-   bg-gradient-to-r from-neutral-400/15 via-stone-500/35 to-stone-800/55 backdrop-blur-2xl shadow-md`}
+   hover:scale-[1.02] transition-[transform,box-shadow] duration-300 cursor-default
+   hover:ring-white/30
+   bg-charcoal/80 backdrop-blur-md shadow-md shadow-charcoal/10`}
     >
-      <Icon className="w-4 h-4 shrink-0" />
+      <Icon className="w-4 h-4 shrink-0 text-ice" />
       <div className="flex flex-col gap-0">
         <h4 className="text-xs tracking-widest uppercase">{heading}</h4>
-        <p className="text-[8px] text-white/70">{text}</p>
+        <p className="text-[8px] text-white/75">{text}</p>
       </div>
-      <ArrowUpRight className="w-3 h-3 shrink-0" />
+      <ArrowUpRight className="w-3 h-3 shrink-0 text-ice" />
+    </div>
+  );
+}
+
+function SkinAnnotations() {
+  return (
+    <div className="pointer-events-none absolute inset-0 select-none text-white">
+      <div className="absolute inset-0 translate-x-[8px] -translate-y-[8px]">
+        <svg
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          fill="none"
+          aria-hidden="true"
+          className="absolute inset-0 size-full stroke-white/70"
+        >
+          <path d="M66 27 L76 23 H94" vectorEffect="non-scaling-stroke" className="drop-shadow-sm drop-shadow-charcoal/70" />
+        </svg>
+      <div aria-hidden="true" className="absolute left-[66%] top-[27%] flex size-5 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/80 drop-shadow-sm drop-shadow-charcoal/70">
+        <span className="size-2.5 rounded-full border border-white/80" />
+      </div>
+      <div className="absolute right-[6%] bottom-[77%] mb-2 isolate flex max-w-36 flex-col gap-1 text-right text-white uppercase tracking-wide drop-shadow-sm drop-shadow-charcoal/80">
+        <span className="text-[10px] font-medium sm:text-xs">Small skin variation</span>
+      </div>
+      </div>
+
     </div>
   );
 }

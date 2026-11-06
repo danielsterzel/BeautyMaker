@@ -19,12 +19,12 @@ function ClusterNode({ icon: Icon, label, className }: ClusterNodeProps) {
         absolute z-10 flex items-center justify-center
         gap-2 rounded-full border border-deep-champagne
         bg-white px-3 py-3
-        shadow-[0_8px_24px_rgba(140,91,66,0.09)]
+        shadow-[0_8px_24px] shadow-deep-champagne/10
         backdrop-blur-md
         ${className}
       `}
     >
-      <Icon className="h-4 w-4 shrink-0 text-[#9C654A]" strokeWidth={1.5} />
+      <Icon className="h-4 w-4 shrink-0 text-deep-champagne" strokeWidth={1.5} />
       <span className="text-[11px] font-medium text-charcoal whitespace-nowrap sm:text-xs">
         {label}
       </span>
@@ -38,7 +38,7 @@ export function ScientificCluster() {
 
       <div
         className="pointer-events-none absolute inset-[15%] rounded-full
-        bg-[#F3DDD0]/30 blur-[65px]"
+        bg-peach/30 blur-[65px]"
       />
 
 
@@ -48,7 +48,7 @@ export function ScientificCluster() {
         className="pointer-events-none absolute inset-0 h-full w-full"
         fill="none"
       >
-        <g stroke="#C9977E" strokeWidth="1.5" strokeOpacity="0.65">
+        <g className="stroke-deep-champagne" strokeWidth="1.5" strokeOpacity="0.65">
           <path d="M240 80 C280 80 282 125 294 130" />
           <path d="M400 80 C360 80 358 125 346 130" />
           <path d="M240 260 C280 260 282 215 294 210" />
@@ -62,10 +62,10 @@ export function ScientificCluster() {
         flex aspect-square w-[21%] -translate-x-1/2
         -translate-y-1/2 items-center justify-center
         rounded-full border-3 border-white
-        bg-[radial-gradient(circle,#F3DDD0_0%,#FAE9DF_65%,#FFF9F5_100%)]
-        shadow-[0_10px_40px_rgba(201,127,104,0.18)]"
+        bg-radial from-peach via-champagne/50 to-offwhite
+        shadow-[0_10px_40px] shadow-deep-champagne/20"
       >
-        <span className="text-sm font-medium tracking-widest text-[#8B5B44] sm:text-lg">
+        <span className="text-sm font-medium tracking-widest text-deep-champagne sm:text-lg">
           YOU
         </span>
       </div>

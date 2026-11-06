@@ -9,13 +9,16 @@
   --text-tertiary: #B7B4AE;
   --charcoal: #211E1C;
   --muted-blue: #95BDD0;
+  --blue: #7497A8;
+  --blue-hover: #5F8193;
+  --ice: #E5EEF2;
   --peach: #F3DDD0;
+  --champagne: #EBD4BD;
+  --deep-champagne: #B98755;
+  --honey: #C9A16A;
+  --blush: #CBB8B0;
   --cold-surface: #F0F4F5;
   --olive: #7E8B74;
-  --blush: #CBB8B0;
-  --champagne: #EBD4BD;
-  --honey: #C9A16A;
-  --deep-champagne: #B98755;
 }
 
 @theme inline {
@@ -23,17 +26,20 @@
   --color-foreground: var(--foreground);
   --color-offwhite: var(--offwhite);
   --color-primary: var(--text-primary);
-  --color-honey: var(--honey);
   --color-secondary: var(--text-secondary);
   --color-tertiary: var(--text-tertiary);
-  --color-champagne: var(--champagne);
   --color-charcoal: var(--charcoal);
   --color-muted-blue: var(--muted-blue);
+  --color-blue: var(--blue);
+  --color-blue-hover: var(--blue-hover);
+  --color-ice: var(--ice);
   --color-peach: var(--peach);
+  --color-champagne: var(--champagne);
+  --color-deep-champagne: var(--deep-champagne);
+  --color-honey: var(--honey);
+  --color-blush: var(--blush);
   --color-cold-surface: var(--cold-surface);
   --color-olive: var(--olive);
-  --color-blush: var(--blush);
-  --color-deep-champagne: var(--deep-champagne);
 }
 
 

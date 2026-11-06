@@ -1,11 +1,11 @@
 import { ProtectedRoute } from "@/app/components/ProtectedRoute";
 import { ScientificCluster } from "../ScientificCluster";
-import { useOnboarding } from "../OnboardingContext";
+import { useSkinAnalysis } from "../SkinAnalysisContext";
 import { ShieldCheckIcon, ArrowRight, ArrowUpRight, Smile } from "lucide-react";
 
 
 export function Inital() {
-  const { currentStep, setCurrentStep } = useOnboarding();
+  const { currentStep, setCurrentStep } = useSkinAnalysis();
 
   return (
     <ProtectedRoute>
@@ -22,7 +22,7 @@ export function Inital() {
           </div>
         </div>
         <div className="w-full h-px bg-tertiary" />
-        <ContinueOnboarding
+        <ContinueSkinAnalysis
           nextPage={() => setCurrentStep((prev) => prev + 1)}
         />
       </div>
@@ -76,7 +76,7 @@ function Header() {
   );
 }
 
-function ContinueOnboarding({nextPage}: {nextPage: () => void}) {
+function ContinueSkinAnalysis({nextPage}: {nextPage: () => void}) {
   return (
     <div className="flex gap-4 items-center">
       <div className="flex flex-col gap-2 items-left">

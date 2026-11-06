@@ -15,12 +15,9 @@ export function Navbar() {
     text-secondary
     items-center justify-between font-medium"
         >
-          <UnderlineLink href="/register">Join Us</UnderlineLink>
-          <UnderlineLink href="#how-it-works">Getting started</UnderlineLink>
-          <UnderlineLink href="#our-purpose">Our Purpose</UnderlineLink>
-          <UnderlineLink href="/">The Science behind</UnderlineLink>
+          <UnderlineLink href="#how-it-works">Philosophy</UnderlineLink>
           <UnderlineLink href="/login">Login</UnderlineLink>
-          <UnderlineLink href="/onboarding">Onboarding</UnderlineLink>
+          <UnderlineLink href="/skin-space">SkinSpace</UnderlineLink>
         </ul>
       </nav>
       <div className="hidden shrink-0 justify-end sm:flex xl:flex-1">

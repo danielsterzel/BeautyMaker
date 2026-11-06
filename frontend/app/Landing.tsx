@@ -9,20 +9,6 @@ export function Landing() {
   return (
     <div className="@container flex w-full min-w-0 flex-col justify-center gap-8 lg:min-h-full lg:gap-12">
       <div className="px-8">
-        <div
-          className="relative px-2 w-fit uppercase tracking-wide flex gap-4 items-center
-        border border-tertiary backdrop-blur-2xl text-sm rounded-3xl p-1"
-        >
-          <div className="bg-champagne rounded-full p-1">
-            <ScanFaceIcon className="w-6 h-6 shrink-0 text-taupe-700" />
-          </div>
-          <div className="text-xs flex flex-col gap-1">
-            <h3 className="">Personalized skincare engine</h3>
-          <p className="text-[10px] text-secondary">
-            Science meets personalization
-          </p>
-          </div>
-        </div>
       </div>
       <div className="w-full">
         <Title />
@@ -43,10 +29,9 @@ function QuickStory() {
     >
       <motion.li
         variants={QuickStoryLi}
-        className="min-w-0 cursor-default select-none flex items-center gap-3"
+        className="bg-white shadow-md rounded-2xl p-4 min-w-0 cursor-default select-none flex items-center gap-3"
       >
         <div className="w-8 shrink-0 tracking-widest">01</div>
-        <div className=" h-20 w-px shrink-0 bg-black" />
         <div
           className="min-w-0 flex-1 text-left gap-4
       flex items-center text-xs "
@@ -67,10 +52,9 @@ function QuickStory() {
 
       <motion.li
         variants={QuickStoryLi}
-        className="min-w-0 cursor-default select-none flex items-center gap-3"
+        className="bg-white shadow-md rounded-2xl p-4 min-w-0 cursor-default select-none flex items-center gap-3"
       >
         <div className="w-8 shrink-0 tracking-widest">02</div>
-        <div className=" h-20 w-px shrink-0 bg-black" />
         <div
           className="min-w-0 flex-1 text-left gap-4
       flex items-center text-xs "
@@ -92,10 +76,9 @@ function QuickStory() {
 
       <motion.li
         variants={QuickStoryLi}
-        className="min-w-0 cursor-default select-none flex items-center gap-3"
+        className="bg-white shadow-md rounded-2xl p-4 min-w-0 cursor-default select-none flex items-center gap-3"
       >
         <div className="w-8 shrink-0 tracking-widest">03</div>
-        <div className=" h-20 w-px shrink-0 bg-black" />
         <div
           className="min-w-0 flex-1 text-left gap-4
       flex items-center text-xs "
@@ -120,19 +103,19 @@ function QuickStory() {
 
 function Title() {
   return (
-    <div className="select-none flex min-w-0 flex-col gap-2 lg:px-8 xl:px-16 justify-start">
-      <div className="flex flex-col gap-2 max-w-lg">
+    <div className="bg-white rounded-2xl px-4 pb-24 pt-6 shadow-md select-none flex min-w-0 flex-col gap-2 lg:px-8 xl:px-16 justify-start">
+      <div className="flex flex-col max-w-lg">
         <EyebrowHeading />
       </div>
-      <div className="w-fit max-w-full flex flex-col gap-2">
+      <div className="w-fit max-w-full">
         <h1 className="text-4xl tracking-wider uppercase">
           Skincare, intelligently designed
         </h1>
-        <CoolSeparator />
       </div>
 
-      <p className="text-secondary max-w-lg text-left text-xs">
-      Understand your skin, explore ingredients, and build a personalized routine guided by science.
+      <p className="mt-4  text-secondary max-w-lg text-left text-xs">
+        Understand your skin, explore ingredients, and build a personalized
+        routine guided by science.
       </p>
       <div className="flex flex-wrap items-center gap-3 mt-2 sm:gap-6">
         <DiscoverAurelia />

@@ -1,0 +1,160 @@
+{
+  "normalized_targets": [
+    {
+      "original_name": "uneven skin tone",
+      "normalized_name": "uneven_skin_tone",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "dullnes",
+      "normalized_name": "dullness",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "textural irregularieties",
+      "normalized_name": "textural_irregularities",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "dryness",
+      "normalized_name": "dryness",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "dehydration",
+      "normalized_name": "dehydration",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "signs of congestion",
+      "normalized_name": "signs_of_congestion",
+      "category": "SKIN_CONCERN",
+      "needs_review": true
+    },
+    {
+      "original_name": "dullness",
+      "normalized_name": "dullness",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "textural irregularities",
+      "normalized_name": "textural_irregularities",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "visible shine",
+      "normalized_name": "visible_shine",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "dark circles",
+      "normalized_name": "dark_circles",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "puffiness",
+      "normalized_name": "puffiness",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "cleansing",
+      "normalized_name": "cleansing",
+      "category": "PRODUCT_FUNCTION",
+      "needs_review": false
+    },
+    {
+      "original_name": "hair",
+      "normalized_name": "hair",
+      "category": "OTHER",
+      "needs_review": false
+    },
+    {
+      "original_name": "signs of aging",
+      "normalized_name": "signs_of_aging",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "early signs of aging",
+      "normalized_name": "early_signs_of_aging",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "crow's feet",
+      "normalized_name": "crow_feet",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "barrier support",
+      "normalized_name": "barrier_support",
+      "category": "PRODUCT_FUNCTION",
+      "needs_review": false
+    },
+    {
+      "original_name": "look of redness",
+      "normalized_name": "redness",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "advanced signs of aging",
+      "normalized_name": "advanced_signs_of_aging",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "antioxidant support",
+      "normalized_name": "antioxidant_support",
+      "category": "PRODUCT_FUNCTION",
+      "needs_review": false
+    },
+    {
+      "original_name": "uv protection",
+      "normalized_name": "uv_protection",
+      "category": "PRODUCT_FUNCTION",
+      "needs_review": false
+    },
+    {
+      "original_name": "lip plumpness",
+      "normalized_name": "lip_plumpness",
+      "category": "SKIN_GOAL",
+      "needs_review": false
+    },
+    {
+      "original_name": "blemishes",
+      "normalized_name": "blemishes",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "wrinkles",
+      "normalized_name": "wrinkles",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "redness",
+      "normalized_name": "redness",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    },
+    {
+      "original_name": "hyperpigmentation",
+      "normalized_name": "hyperpigmentation",
+      "category": "SKIN_CONCERN",
+      "needs_review": false
+    }
+  ]
+}

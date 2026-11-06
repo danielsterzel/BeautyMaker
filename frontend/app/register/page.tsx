@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { ArrowUpRight, ArrowLeft, Check, Circle } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { executeRegister } from "@/lib/auth-service";
+import { executeRegister } from "@/lib/auth/auth-service";
 import { toast } from "sonner";
+import { useMe } from "@/lib/hooks/useMe";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
 
@@ -13,7 +15,6 @@ export default function Register() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [retypedPassword, setRetypedPassword] = useState("")
-
   const register = useMutation({
     mutationFn: executeRegister,
     onSuccess: () => {
@@ -28,6 +29,18 @@ export default function Register() {
     }
   })
 
+  const {data: user} = useMe()
+  const router = useRouter()
+  
+  useEffect(() => {
+    if(user)
+      {
+        router.replace("/skin-analysis")
+        return
+      }
+    
+  }, [router, user])
+
   const passwordRules = [
   { label: "12–256 characters", met: password.length >= 12 && password.length <= 256 },
   { label: "One uppercase letter", met: /[A-Z]/.test(password) },
@@ -41,7 +54,7 @@ export default function Register() {
   
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
-      <div className="absolute inset-0 bg-[#EAD5C5]">
+      <div className="absolute inset-0 bg-champagne">
         <img
           src="/register.jpg"
           alt="Skincare ingredients"

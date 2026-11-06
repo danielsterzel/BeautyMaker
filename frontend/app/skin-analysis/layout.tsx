@@ -1,12 +1,12 @@
-import { OnboardingProvider } from "./OnboardingContext";
+import { SkinAnalysisProvider } from "./SkinAnalysisContext";
 import { SkinProfileProgress } from "./SkinProgileProgress";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-export default function OnboardingLayout({
+export default function SkinAnalysisLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <OnboardingProvider>
+    <SkinAnalysisProvider>
       <div className="flex min-h-screen flex-col px-8 py-8">
         <header className="grid grid-cols-[auto_1fr] items-center gap-8">
           <Link
@@ -23,6 +23,6 @@ export default function OnboardingLayout({
         </header>
         <main className="flex-1">{children}</main>
       </div>
-    </OnboardingProvider>
+    </SkinAnalysisProvider>
   );
 }

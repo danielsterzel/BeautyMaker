@@ -1,35 +1,29 @@
-"use client"
+"use client";
 
-import { getMe } from "@/lib/auth-api"
-import { useQuery } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
+import { useMe } from "@/lib/hooks/useMe";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export function ProtectedRoute({children}: Readonly<{children: React.ReactNode}>)
-{
-    const router = useRouter()
-    const session = useQuery({
-        queryKey: ["auth", "me"],
-        queryFn: getMe,
-        retry: false,
-        refetchOnMount: "always"
-    })
-    useEffect(() => {
-    if (session.isError && !session.isFetching){
-        router.replace("/login")
-    }    
-        
-    if (session.isError){
-        router.replace("/login")
-        }
-        
-    }, [session.isError, session.isFetching, router])
+export function ProtectedRoute({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  const router = useRouter();
 
-    if (session.isPending || session.isFetching)
-        {
-            return <p>Checking session...</p>
-        }
-    if(session.isError){return null}
+  const { isPending, isFetching, isError, isSuccess } = useMe();
 
-    return <>{children}</>
+  useEffect(() => {
+    if (isError && !isFetching) {
+      router.replace("/login");
+    }
+  }, [isError, isFetching, router]);
+
+  if (isPending || isFetching) {
+    return <p>Checking session...</p>;
+  }
+
+  if (isError || !isSuccess) {
+    return null;
+  }
+
+  return <>{children}</>;
 }

@@ -1,9 +1,9 @@
 "use client";
 import { Inital } from "./steps/Initial";
-import { useOnboarding } from "./OnboardingContext";
-export default function Onboarding() {
+import { useSkinAnalysis } from "./SkinAnalysisContext";
+export default function SkinAnalysis() {
 
-  const {currentStep} = useOnboarding()
+  const {currentStep} = useSkinAnalysis()
   return (
     <div>
       {/* <Inital/> */}

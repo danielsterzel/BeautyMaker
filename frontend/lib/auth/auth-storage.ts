@@ -1,6 +1,6 @@
 
 import {create} from "zustand";
-import { User } from "./auth-schemas";
+import type { User } from "./auth-schemas";
 
 type AuthData = {
     accessToken: string | null
